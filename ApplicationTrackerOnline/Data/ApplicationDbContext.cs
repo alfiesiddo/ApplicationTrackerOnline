@@ -10,5 +10,6 @@ namespace ApplicationTrackerOnline.Data
             : base(options)
         {
         }
+        public DbSet<JobApplication> jobApplications { get; set; }
     }
 }

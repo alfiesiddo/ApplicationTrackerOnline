@@ -18,6 +18,16 @@ namespace ApplicationTrackerOnline.Controllers
             return View();
         }
 
+        public IActionResult Applications()
+        {
+            return View();
+        }
+
+        public IActionResult AddApplication()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

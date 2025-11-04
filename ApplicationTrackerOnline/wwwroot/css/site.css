@@ -1,11 +1,11 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -17,9 +17,17 @@ html {
   min-height: 100%;
 }
 
-body {
-  margin-bottom: 60px;
+.custom-navbar {
+    background-color: #FFD6BA !important; /* your desired color */
+    border-bottom: 2px solid #FFD6BA !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
+
+body {
+    margin-bottom: 60px;
+    background-color: #FFF5EC;
+}
+
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);

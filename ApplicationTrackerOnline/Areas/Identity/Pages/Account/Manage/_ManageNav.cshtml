@@ -1,0 +1,16 @@
+﻿@inject SignInManager<ApplicationUser> SignInManager
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+
+    var currentPage = (ViewContext.RouteData.Values["page"] as string) ?? "";
+    bool isOnChangePassword = currentPage.EndsWith("/ChangePassword", StringComparison.OrdinalIgnoreCase);
+    
+}
+<ul class="nav nav-pills flex-column">
+    @if (!isOnChangePassword)
+    {
+        <li>
+            <a class="btn btn-dark w-100" id="change-password" asp-page="./ChangePassword">Password</a>
+        </li>
+    }
+</ul>

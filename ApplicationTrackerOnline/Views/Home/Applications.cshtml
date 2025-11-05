@@ -7,10 +7,11 @@
         .ThenBy(a => a.AppliedDate);
 }
 
-<div class="text-center">
+<div>
     <h1 class="display-4">@ViewData["Title"]</h1>
 </div>
 <br>
+
 <div class="d-flex align-items-center gap-2 mb-3">
     <a class="btn btn-dark" asp-controller="Home" asp-action="AddApplication">
         Add Application
@@ -71,7 +72,7 @@
                 const text = await resp.text();
                 throw new Error(text || `Server responded ${resp.status}`);
             }
-            location.reload();
+            location.reload()
             return await resp.json();
         }
 

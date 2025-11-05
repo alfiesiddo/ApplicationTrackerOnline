@@ -9,6 +9,7 @@
     <h3 class="display-4">Log In</h3>
     <hr />
 </div>
+
 <div class="row">
     <div class="col-12">
         <section>
@@ -34,10 +35,8 @@
                 <div>
                     <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-dark">Log in</button>
                 </div>
-                <div class="text-center">
-                    <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                    </p>
+                <br />
+                <div>
                     <p>
                         <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
                     </p>

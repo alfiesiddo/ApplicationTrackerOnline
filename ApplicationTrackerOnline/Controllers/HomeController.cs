@@ -55,6 +55,17 @@ namespace ApplicationTrackerOnline.Controllers
             return RedirectToAction("AddApplication", "Home");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteApplication(JobApplication application)
+        {
+            if (application != null) 
+            {
+                _context.jobApplications.Remove(application);
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

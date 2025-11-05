@@ -5,3 +5,16 @@
 <div class="text-center">
     <h1 class="display-4">@ViewData["Title"]</h1>
 </div>
+
+<div class="container">
+    <form method="post" asp-controller="Home" asp-action="AddNewApplication" autocomplete="off">
+
+        <input type="text" id="Company" name="Company" placeholder="Company" />
+        <input type="text" id="Role" name="Role" placeholder="Role" />
+        <input type="text" id="Location" name="Location" placeholder="Location" />
+        <input type="number" id="Salary" name="Salary" placeholder="Salary" />
+        <input type="url" id="Portal" name="Portal" placeholder="Portal URL" />
+
+        <button type="submit">Submit</button>
+    </form>
+</div>

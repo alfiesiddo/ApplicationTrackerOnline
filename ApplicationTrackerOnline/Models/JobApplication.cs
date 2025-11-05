@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApplicationTrackerOnline.Models
 {
@@ -19,5 +20,18 @@ namespace ApplicationTrackerOnline.Models
         public int Status { get; set; } = 0; // 0 = Applied, 1 = Rejected, 2 = Scouted, 3 = Assessments, 4 = Interview, 5 = Offered
 
         public DateTime AppliedDate { get; set; } = DateTime.Now;
+
+
+        public JobApplication() { }
+
+        public JobApplication(string role, string company, string location, string portal, string userId)
+        {
+            Role = role;
+            CompanyName = company;
+            Location = location;
+            PortalURL = portal;
+
+            UserId = userId;
+        }
     }
 }

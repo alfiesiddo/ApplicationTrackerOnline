@@ -2,6 +2,7 @@ using ApplicationTrackerOnline.Data;
 using ApplicationTrackerOnline.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -27,9 +28,15 @@ namespace ApplicationTrackerOnline.Controllers
             return View();
         }
 
-        public IActionResult Applications()
+        public async Task<IActionResult> Applications()
         {
-            return View();
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            var applications = await _context.jobApplications.Where(l => l.UserId == userId).ToListAsync();
+            return View(applications);
         }
 
         public IActionResult AddApplication()
@@ -40,14 +47,13 @@ namespace ApplicationTrackerOnline.Controllers
         [HttpPost]
         public async Task<IActionResult> AddNewApplication(string Company, string Role, string Location, int Salary, string Portal)
         {
-            ApplicationUser user = await _userManager.GetUserAsync(User);
-            string userId = "";
-            if (user != null)
-            { 
-                userId = user.Id;
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
             }
 
-            JobApplication application = new JobApplication(Role, Company, Location, Portal, userId);
+            JobApplication application = new JobApplication(Role, Company, Location, Portal, Salary, userId);
 
             _context.jobApplications.Add(application);
             await _context.SaveChangesAsync();

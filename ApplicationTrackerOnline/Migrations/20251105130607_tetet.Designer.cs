@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ApplicationTrackerOnline.Data.Migrations
+namespace ApplicationTrackerOnline.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251102142542_jobs")]
-    partial class jobs
+    [Migration("20251105130607_tetet")]
+    partial class tetet
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -116,6 +116,9 @@ namespace ApplicationTrackerOnline.Data.Migrations
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Salary")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");

@@ -16,6 +16,8 @@ namespace ApplicationTrackerOnline.Models
         public string Location { get; set; }
         public string PortalURL { get; set; }
 
+        public int Salary {  get; set; }
+
 
         public int Status { get; set; } = 0; // 0 = Applied, 1 = Rejected, 2 = Scouted, 3 = Assessments, 4 = Interview, 5 = Offered
 
@@ -24,12 +26,13 @@ namespace ApplicationTrackerOnline.Models
 
         public JobApplication() { }
 
-        public JobApplication(string role, string company, string location, string portal, string userId)
+        public JobApplication(string role, string company, string location, string portal,int salary, string userId)
         {
             Role = role;
             CompanyName = company;
             Location = location;
             PortalURL = portal;
+            Salary = salary;
 
             UserId = userId;
         }

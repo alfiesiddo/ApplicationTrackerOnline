@@ -51,6 +51,8 @@
                                 (5, "Offered")
                                 };
                 }
+                <small class="applied-date">Applied: @Model.AppliedDate.ToString("dd MMM yyyy")</small><br />
+                <small class="applied-date">Salary: @Model.Salary.ToString()</small>
 
                 <div class="status-area" data-job-id="@Model.Id">
                     @* Badge acts as the dropdown toggle. Use a button for accessibility. *@
@@ -82,9 +84,8 @@
                             }
                         </div>
                     </div>
-
-                    <small class="applied-date">Applied: @Model.AppliedDate.ToString("dd MMM yyyy")</small>
                 </div>
+
             </div>
 
             <div aria-hidden="true"></div>

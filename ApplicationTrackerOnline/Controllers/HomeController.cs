@@ -39,6 +39,7 @@ namespace ApplicationTrackerOnline.Controllers
             return View(applications);
         }
 
+
         public IActionResult AddApplication()
         {
             return View();
@@ -71,6 +72,19 @@ namespace ApplicationTrackerOnline.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateApplicationStatus([FromBody] UpdateStatusDTO model)
+        {
+            var application = await _context.jobApplications.FindAsync(model.Id);
+            if (application != null)
+            {
+                application.Status = model.Status;
+                await _context.SaveChangesAsync();
+            }
+            return Json(new { status = application.Status });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

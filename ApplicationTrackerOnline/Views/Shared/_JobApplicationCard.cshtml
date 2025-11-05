@@ -120,7 +120,7 @@
         }
 
         async function updateStatusOnServer(jobId, newStatus) {
-            const url = '/JobApplications/UpdateStatus';
+            const url = '/Home/UpdateApplicationStatus';
             const token = getAntiForgeryToken();
             const payload = { id: jobId, status: parseInt(newStatus, 10) };
             const headers = { 'Content-Type': 'application/json' };

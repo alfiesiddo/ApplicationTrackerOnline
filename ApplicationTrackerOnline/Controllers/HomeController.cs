@@ -71,7 +71,7 @@ namespace ApplicationTrackerOnline.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return Ok();
+            return RedirectToAction("Applications", "Home");
         }
 
         [HttpPost]

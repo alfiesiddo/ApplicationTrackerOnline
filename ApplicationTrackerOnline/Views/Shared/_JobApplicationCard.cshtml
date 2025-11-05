@@ -97,7 +97,10 @@
         {
             <a class="action-btn portal" href="@Model.PortalURL" target="_blank" rel="noopener noreferrer">Open Portal</a>
         }
-        <a class="action-btn delete" href="#" onclick="return confirm('Delete this application?');">Delete</a>
+        <form method="post" asp-controller="Home" asp-action="DeleteApplication" onsubmit="return confirm('Delete this application?');">
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <button type="submit" class="action-btn delete">Delete</button>
+        </form>
     </div>
 </div>
     </div>

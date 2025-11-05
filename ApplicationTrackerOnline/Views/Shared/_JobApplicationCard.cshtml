@@ -5,8 +5,8 @@
     {
         return status switch
         {
-            0 => ("Applied", "status-applied"),
-            1 => ("Rejected", "status-rejected"),
+            0 => ("Rejected", "status-rejected"),
+            1 => ("Applied", "status-applied"),
             2 => ("Scouted", "status-scouted"),
             3 => ("Assessments", "status-assessments"),
             4 => ("Interview", "status-interview"),
@@ -43,8 +43,8 @@
                     var statusInfo = GetStatusInfo(Model.Status);
                     var statuses = new List<(int value, string label)>
                                 {
-                                (0, "Applied"),
-                                (1, "Rejected"),
+                                (0, "Rejected"),
+                                (1, "Applied"),
                                 (2, "Scouted"),
                                 (3, "Assessments"),
                                 (4, "Interview"),
@@ -109,8 +109,8 @@
 <script>
     (function () {
         const STATUS_MAP = {
-            0: { label: "Applied", cls: "status-applied" },
-            1: { label: "Rejected", cls: "status-rejected" },
+            1: { label: "Applied", cls: "status-applied" },
+            0: { label: "Rejected", cls: "status-rejected" },
             2: { label: "Scouted", cls: "status-scouted" },
             3: { label: "Assessments", cls: "status-assessments" },
             4: { label: "Interview", cls: "status-interview" },

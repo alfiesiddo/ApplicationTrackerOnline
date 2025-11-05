@@ -16,7 +16,8 @@
     }
 }
 
-<div class="job-card" role="article" aria-labelledby="job-@Model.Id-title">
+@* --- FIX: Cast Model.Status to (int) to ensure the numeric value is used --- *@
+<div class="job-card" role="article" aria-labelledby="job-@Model.Id-title" data-status="@((int)Model.Status)">
     <div class="job-card-left">
         <div class="avatar" aria-hidden="true">
             <span class="initial">@(!string.IsNullOrEmpty(Model.CompanyName) ? Model.CompanyName[0].ToString().ToUpper() : "J")</span>
@@ -53,7 +54,6 @@
                 <small class="applied-date">Salary: @Model.Salary.ToString()</small>
 
                 <div class="status-area" data-job-id="@Model.Id">
-                    @* Badge acts as the dropdown toggle. Use a button for accessibility. *@
                     <div class="status-dropdown" id="status-dropdown-@Model.Id">
                         <button type="button"
                                 id="status-toggle-@Model.Id"
@@ -69,7 +69,6 @@
                         <div class="status-menu" id="status-menu-@Model.Id" role="menu" aria-labelledby="status-toggle-@Model.Id" hidden>
                             @foreach (var s in statuses)
                             {
-                                // Use buttons (not <option>) to avoid TagHelper issues
                                 var isCurrent = Model.Status == s.value;
                                 <button type="button"
                                         class="status-item @(isCurrent ? "current" : "")"
@@ -97,7 +96,6 @@
                 }
                 <form method="post" asp-controller="Home" asp-action="DeleteApplication" onsubmit="return confirm('Delete this application?');">
                     <input type="hidden" name="Id" value="@Model.Id" />
-                    @* This token is correctly scoped to its form and should stay *@
                     @Html.AntiForgeryToken()
                     <button type="submit" class="action-btn delete">Delete</button>
                 </form>

@@ -10,16 +10,33 @@
 <div class="text-center">
     <h1 class="display-4">@ViewData["Title"]</h1>
 </div>
+<br>
+<div class="d-flex align-items-center gap-2 mb-3">
+    <a class="btn btn-dark" asp-controller="Home" asp-action="AddApplication">
+        Add Application
+    </a>
+
+    <select id="statusFilter" class="form-select" style="width: auto;">
+        <option value="all">Show All</option>
+        <option value="1">Applied</option>
+        <option value="0">Rejected</option>
+        <option value="2">Scouted</option>
+        <option value="3">Assessments</option>
+        <option value="4">Interview</option>
+        <option value="5">Offered</option>
+    </select>
+</div>
+
 
 @Html.AntiForgeryToken()
-
-<div>
+<div id="application-list">
     @foreach (var app in orderedApplications)
     {
         @await Html.PartialAsync("_JobApplicationCard", app)
     }
 </div>
 
+<!-- Existing script for status updates -->
 <script>
     (function () {
         const STATUS_MAP = {
@@ -54,6 +71,7 @@
                 const text = await resp.text();
                 throw new Error(text || `Server responded ${resp.status}`);
             }
+            location.reload();
             return await resp.json();
         }
 
@@ -191,4 +209,30 @@
             menu.querySelectorAll('.status-item').forEach(i => i.setAttribute('tabindex', '-1'));
         });
     })();
+</script>
+
+<!-- Script for handling dropdown filtering (no changes needed here) -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const statusFilter = document.getElementById('statusFilter');
+        const applicationList = document.getElementById('application-list');
+        // It's better to select children directly from the container
+        const allApplications = applicationList.children;
+
+        statusFilter.addEventListener('change', function () {
+            const selectedStatus = this.value;
+
+            // Convert HTMLCollection to Array to use forEach
+            Array.from(allApplications).forEach(function (card) {
+                // Ensure we're only acting on elements that have the data-status attribute
+                if (card.hasAttribute('data-status')) {
+                    if (selectedStatus === 'all' || card.getAttribute('data-status') === selectedStatus) {
+                        card.style.display = ''; // Show the card
+                    } else {
+                        card.style.display = 'none'; // Hide the card
+                    }
+                }
+            });
+        });
+    });
 </script>

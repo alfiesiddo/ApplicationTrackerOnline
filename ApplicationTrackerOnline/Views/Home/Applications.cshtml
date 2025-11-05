@@ -2,6 +2,25 @@
     ViewData["Title"] = "Your Applications";
 }
 
+@{
+    // Dummy JobApplication object for testing the partial
+    var jobApp = new ApplicationTrackerOnline.Models.JobApplication
+    {
+        Id = 1,
+        UserId = "12345",
+        Role = "Software Engineer",
+        CompanyName = "Nvidia Technologies",
+        Location = "San Francisco, CA",
+        PortalURL = "https://careers.openai.com/jobs/12345",
+        Status = 2, // Interview
+        AppliedDate = new DateTime(2025, 10, 28)
+    };
+}
+
 <div class="text-center">
     <h1 class="display-4">@ViewData["Title"]</h1>
+</div>
+
+<div>
+    @await Html.PartialAsync("_JobApplicationCard", jobApp)
 </div>

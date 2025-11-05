@@ -1,15 +1,194 @@
 ﻿@model List<ApplicationTrackerOnline.Models.JobApplication>
 @{
     ViewData["Title"] = "Your Applications";
+
+    var orderedApplications = Model
+        .OrderBy(a => a.Status) // Status 0 -> 5
+        .ThenBy(a => a.AppliedDate);
 }
 
 <div class="text-center">
     <h1 class="display-4">@ViewData["Title"]</h1>
 </div>
 
+@Html.AntiForgeryToken()
+
 <div>
-    @foreach (var app in Model)
+    @foreach (var app in orderedApplications)
     {
         @await Html.PartialAsync("_JobApplicationCard", app)
     }
 </div>
+
+<script>
+    (function () {
+        const STATUS_MAP = {
+            1: { label: "Applied", cls: "status-applied" },
+            0: { label: "Rejected", cls: "status-rejected" },
+            2: { label: "Scouted", cls: "status-scouted" },
+            3: { label: "Assessments", cls: "status-assessments" },
+            4: { label: "Interview", cls: "status-interview" },
+            5: { label: "Offered", cls: "status-offered" }
+        };
+
+        function getAntiForgeryToken() {
+            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+            return tokenInput ? tokenInput.value : null;
+        }
+
+        async function updateStatusOnServer(jobId, newStatus) {
+            const url = '/Home/UpdateApplicationStatus';
+            const token = getAntiForgeryToken();
+            const payload = { id: jobId, status: parseInt(newStatus, 10) };
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['RequestVerificationToken'] = token;
+
+            const resp = await fetch(url, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(payload),
+                credentials: 'same-origin'
+            });
+
+            if (!resp.ok) {
+                const text = await resp.text();
+                throw new Error(text || `Server responded ${resp.status}`);
+            }
+            return await resp.json();
+        }
+
+        function setBadge(jobId, statusInt) {
+            const toggle = document.getElementById('status-toggle-' + jobId);
+            const badgeLabel = toggle && toggle.querySelector('.status-label');
+            if (!toggle || !badgeLabel) return;
+            const map = STATUS_MAP[statusInt] || { label: 'Unknown', cls: 'status-unknown' };
+            badgeLabel.textContent = map.label;
+
+            // remove previous status-* classes but keep other classes
+            toggle.className = 'status-badge ' + map.cls;
+        }
+
+        function openMenu(dropdown, toggle, menu) {
+            menu.removeAttribute('hidden');
+            toggle.setAttribute('aria-expanded', 'true');
+            // focus selected item if present
+            const current = menu.querySelector('.status-item.current');
+            (current || menu.querySelector('.status-item')).focus();
+            // add document click listener for outside clicks
+            document.addEventListener('click', dropdown._outsideHandler = (ev) => {
+                if (!dropdown.contains(ev.target)) closeMenu(dropdown, toggle, menu);
+            });
+            document.addEventListener('keydown', dropdown._keyHandler = (ev) => menuKeyHandler(ev, dropdown, toggle, menu));
+        }
+
+        function closeMenu(dropdown, toggle, menu) {
+            menu.setAttribute('hidden', '');
+            toggle.setAttribute('aria-expanded', 'false');
+            // cleanup handlers
+            if (dropdown._outsideHandler) {
+                document.removeEventListener('click', dropdown._outsideHandler);
+                dropdown._outsideHandler = null;
+            }
+            if (dropdown._keyHandler) {
+                document.removeEventListener('keydown', dropdown._keyHandler);
+                dropdown._keyHandler = null;
+            }
+        }
+
+        function toggleMenu(dropdown, toggle, menu) {
+            const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+            if (isOpen) closeMenu(dropdown, toggle, menu);
+            else openMenu(dropdown, toggle, menu);
+        }
+
+        function menuKeyHandler(e, dropdown, toggle, menu) {
+            const active = document.activeElement;
+            const items = Array.from(menu.querySelectorAll('.status-item'));
+            const idx = items.indexOf(active);
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                closeMenu(dropdown, toggle, menu);
+                toggle.focus();
+                return;
+            }
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                const next = items[(idx + 1) % items.length];
+                next.focus();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                const prev = items[(idx - 1 + items.length) % items.length];
+                prev.focus();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                items[0].focus();
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                items[items.length - 1].focus();
+            } else if (e.key === 'Tab') {
+                // close on tab to maintain natural tab order
+                closeMenu(dropdown, toggle, menu);
+            } else if (e.key === 'Enter' || e.key === ' ') {
+                // Space or Enter selects
+                if (active && active.classList.contains('status-item')) {
+                    e.preventDefault();
+                    active.click();
+                }
+            }
+        }
+
+        document.querySelectorAll('.status-dropdown').forEach(dropdown => {
+            const toggle = dropdown.querySelector('.status-badge');
+            const menu = dropdown.querySelector('.status-menu');
+            const jobId = dropdown.closest('.status-area')?.getAttribute('data-job-id');
+
+            if (!toggle || !menu || !jobId) return;
+
+            // wire toggle click
+            toggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleMenu(dropdown, toggle, menu);
+            });
+
+            // allow keyboard on toggle
+            toggle.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openMenu(dropdown, toggle, menu);
+                }
+            });
+
+            // item click handlers
+            menu.querySelectorAll('.status-item').forEach(item => {
+                item.addEventListener('click', async (ev) => {
+                    const selectedValue = item.getAttribute('data-value');
+                    // Optimistic UI: update local badge and mark current
+                    setBadge(jobId, selectedValue);
+                    menu.querySelectorAll('.status-item').forEach(i => i.classList.remove('current'));
+                    item.classList.add('current');
+
+                    // close the menu
+                    closeMenu(dropdown, toggle, menu);
+                    toggle.focus();
+
+                    try {
+                        const result = await updateStatusOnServer(jobId, selectedValue);
+                        if (result && typeof result.status !== 'undefined') {
+                            setBadge(jobId, result.status);
+                            // update current indicator based on server-returned status
+                            menu.querySelectorAll('.status-item').forEach(i => {
+                                i.classList.toggle('current', i.getAttribute('data-value') == result.status);
+                            });
+                        }
+                    } catch (err) {
+                        alert('Could not update status on server. Please try again.');
+                        console.error(err);
+                    }
+                });
+            });
+
+            // Ensure menu items are focusable
+            menu.querySelectorAll('.status-item').forEach(i => i.setAttribute('tabindex', '-1'));
+        });
+    })();
+</script>

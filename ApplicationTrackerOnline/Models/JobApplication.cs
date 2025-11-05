@@ -19,7 +19,7 @@ namespace ApplicationTrackerOnline.Models
         public int Salary {  get; set; }
 
 
-        public int Status { get; set; } = 0; //0 = Rejected, 1 = Applied, 2 = Scouted, 3 = Assessments, 4 = Interview, 5 = Offered
+        public int Status { get; set; } = 1; //0 = Rejected, 1 = Applied, 2 = Scouted, 3 = Assessments, 4 = Interview, 5 = Offered
 
         public DateTime AppliedDate { get; set; } = DateTime.Now;
 

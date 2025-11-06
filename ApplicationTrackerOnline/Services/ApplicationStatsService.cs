@@ -14,7 +14,7 @@ namespace ApplicationTrackerOnline.Services
         }
 
         //return top 5 locations user has applied for jobs to.
-        private async Task<List<string>> getTopLocations(string userId)
+        public async Task<List<string>> getTopLocations(string userId)
         {
             List<string> output = new List<string>();
 
@@ -33,9 +33,8 @@ namespace ApplicationTrackerOnline.Services
             return output;
         }
 
-
         //show amount of different statuses
-        private async Task<ApplicationStagesDTO> getDifferentTypes(string userId)
+        public async Task<ApplicationStagesDTO> getDifferentTypes(string userId)
         {
             var rejectedCount = await _context.jobApplications
                 .CountAsync(j => j.UserId == userId && j.Status == 0);
@@ -66,7 +65,48 @@ namespace ApplicationTrackerOnline.Services
             };
 
             return output;
-        } 
+        }
+
+        //---------------------------------------
+        //WRAP IN ONE PANEL
+
+        //applications this month
+        private async Task<int> applicationsThisMonth(string userId)
+        {
+            DateTime today = DateTime.Today;
+            DateTime monthAgo = today.AddMonths(-1);
+
+            int output = await _context.jobApplications.CountAsync(j => j.UserId == userId && j.AppliedDate.Date <= today && j.AppliedDate >= monthAgo);
+
+            return output; ;
+        }
+
+        //applications this week
+
+        private async Task<int> applicationsThisWeek(string userId)
+        {
+            DateTime today = DateTime.Today;
+            DateTime weekAgo = today.AddDays(-7);
+
+            int output = await _context.jobApplications.CountAsync(j =>j.UserId == userId && j.AppliedDate.Date <= today && j.AppliedDate >= weekAgo);
+
+            return output;
+        }
+
+        //applications today
+        private async Task<int> applicationsToday(string userId)
+        {
+            DateTime today = DateTime.Today;
+
+            int output = await _context.jobApplications.CountAsync(j=> j.UserId == userId && j.AppliedDate.Date == today);
+
+            return output;
+        }
+        //--------------------------------------
+
+        //function that returns chart data of daily applications over the last 3 months
+
+
 
     }
 }

@@ -67,9 +67,21 @@ namespace ApplicationTrackerOnline.Services
             return output;
         }
 
-        //---------------------------------------
-        //WRAP IN ONE PANEL
+        public async Task<ApplicationCountDTO> GetApplicationCounts(string userId)
+        {
+            int today = await applicationsToday(userId);
+            int week = await applicationsThisWeek(userId);
+            int month = await applicationsThisMonth(userId);
 
+            ApplicationCountDTO output = new ApplicationCountDTO()
+            {
+                todayCount = today,
+                thisWeekCount = week,
+                thisMonthCount = month
+            };
+
+            return output;
+        }
         //applications this month
         private async Task<int> applicationsThisMonth(string userId)
         {
@@ -78,7 +90,7 @@ namespace ApplicationTrackerOnline.Services
 
             int output = await _context.jobApplications.CountAsync(j => j.UserId == userId && j.AppliedDate.Date <= today && j.AppliedDate >= monthAgo);
 
-            return output; ;
+            return output;
         }
 
         //applications this week
@@ -102,7 +114,7 @@ namespace ApplicationTrackerOnline.Services
 
             return output;
         }
-        //--------------------------------------
+
 
         //function that returns chart data of daily applications over the last 3 months
 

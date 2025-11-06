@@ -1,4 +1,5 @@
 ﻿using ApplicationTrackerOnline.Data;
+using ApplicationTrackerOnline.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationTrackerOnline.Services
@@ -6,6 +7,7 @@ namespace ApplicationTrackerOnline.Services
     public class ApplicationStatsService
     {
         private readonly ApplicationDbContext _context;
+        
         public ApplicationStatsService(ApplicationDbContext context)
         {
             _context = context;
@@ -33,6 +35,14 @@ namespace ApplicationTrackerOnline.Services
 
 
         //show amount of different statuses
+        private async Task<ApplicationStagesDTO> getDifferentTypes(string userId)
+        {
+            ApplicationStagesDTO output = new ApplicationStagesDTO();
+
+
+
+            return output;
+        } 
 
     }
 }

@@ -37,9 +37,33 @@ namespace ApplicationTrackerOnline.Services
         //show amount of different statuses
         private async Task<ApplicationStagesDTO> getDifferentTypes(string userId)
         {
-            ApplicationStagesDTO output = new ApplicationStagesDTO();
+            var rejectedCount = await _context.jobApplications
+                .CountAsync(j => j.UserId == userId && j.Status == 0);
 
+            var appliedCount = await _context.jobApplications
+                .CountAsync(j => j.UserId == userId && j.Status == 1);
 
+            var scoutedCount = await _context.jobApplications
+                .CountAsync(j => j.UserId == userId && j.Status == 2);
+
+            var assessmentCount = await _context.jobApplications
+                .CountAsync(j => j.UserId == userId && j.Status == 3);
+
+            var interviewCount = await _context.jobApplications
+                .CountAsync(j => j.UserId == userId && j.Status == 4);
+
+            var offeredCount = await _context.jobApplications
+                .CountAsync(j => j.UserId == userId && j.Status == 5);
+
+            ApplicationStagesDTO output = new ApplicationStagesDTO()
+            {
+                rejectedCount = rejectedCount,
+                appliedCount = appliedCount,
+                assessmentCount = assessmentCount,
+                interviewCount = interviewCount,
+                offeredCount = offeredCount,
+                scoutedCount = scoutedCount
+            };
 
             return output;
         } 

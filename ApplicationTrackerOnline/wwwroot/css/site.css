@@ -1,4 +1,4 @@
-/* Merged CSS */
+
 
 /* Status badge base */
 .status-badge {
@@ -82,6 +82,8 @@ html {
     font-size: 14px;
     position: relative;
     min-height: 100%;
+    
+    font-family: "Alfa Slab One", serif;
 }
 
 @media (min-width: 768px) {
@@ -98,6 +100,7 @@ html {
 body {
     margin-bottom: 60px;
     background-color: #FFF5EC;
+    font-family: "Host Grotesk", sans-serif;
 }
 
 .custom-navbar {

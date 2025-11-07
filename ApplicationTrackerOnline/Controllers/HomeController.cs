@@ -1,5 +1,6 @@
 using ApplicationTrackerOnline.Data;
 using ApplicationTrackerOnline.Models;
+using ApplicationTrackerOnline.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,12 +16,14 @@ namespace ApplicationTrackerOnline.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
 
         private readonly ApplicationDbContext _context;
+        private readonly ApplicationStatsService _statsService;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        public HomeController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext context, ApplicationStatsService statsService)
         {
             _logger = logger;
             _userManager = userManager;
             _context = context;
+            _statsService = statsService;
         }
 
         public IActionResult Index()
@@ -85,6 +88,44 @@ namespace ApplicationTrackerOnline.Controllers
                 await _context.SaveChangesAsync();
             }
             return Json(new { status = application.Status });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDailyApplicationsChartData()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+            }
+
+            var data = _statsService.GetDailyApplicationsLast3Months(userId);
+            
+            return Json(data);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetApplicationAverages()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+            }
+            var data = _statsService.GetApplicationCounts(userId);
+
+            return Json(data);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetVaryingStages()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+            }
+
+            var data = _statsService.GetDifferentStages(userId);
+
+            return Json(data);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

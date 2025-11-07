@@ -34,7 +34,7 @@ namespace ApplicationTrackerOnline.Services
         }
 
         //show amount of different statuses
-        public async Task<ApplicationStagesDTO> getDifferentTypes(string userId)
+        public async Task<ApplicationStagesDTO> GetDifferentStages(string userId)
         {
             var rejectedCount = await _context.jobApplications
                 .CountAsync(j => j.UserId == userId && j.Status == 0);
@@ -84,12 +84,12 @@ namespace ApplicationTrackerOnline.Services
         }
 
         //function that returns chart data of daily applications over the last 3 months
-        public async Task<List<DailyApplicationDTO>> GetDailyApplicationsLast3Months()
+        public async Task<List<DailyApplicationDTO>> GetDailyApplicationsLast3Months(string userId)
         {
             var threeMonthsAgo = DateTime.Now.AddMonths(-3);
             
             List<DailyApplicationDTO> dailyCounts = _context.jobApplications
-                    .Where(a => a.AppliedDate >= threeMonthsAgo)
+                    .Where(a => a.AppliedDate >= threeMonthsAgo && a.UserId == userId)
                     .GroupBy(a => a.AppliedDate.Date)
                     .Select(g => new DailyApplicationDTO
                     {

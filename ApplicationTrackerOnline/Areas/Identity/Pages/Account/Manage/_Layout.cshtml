@@ -1,4 +1,10 @@
-﻿@{
+﻿<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ApplicationTrackerOnline.styles.css" asp-append-version="true" />
+</head>
+
+@{
     if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout !=  null)
     {
         Layout = parentLayout.ToString();
@@ -8,8 +14,6 @@
         Layout = "/Areas/Identity/Pages/_Layout.cshtml";
     }
 }
-<div class="text-center">
-    <h1 class="display-4">Manage Your Account</h1>
 
     <div>
         <hr />

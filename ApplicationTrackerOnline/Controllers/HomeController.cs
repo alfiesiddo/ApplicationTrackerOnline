@@ -95,11 +95,9 @@ namespace ApplicationTrackerOnline.Controllers
         {
             var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
-            {
-            }
+                return Unauthorized();
 
-            var data = _statsService.GetDailyApplicationsLast3Months(userId);
-            
+            var data = await _statsService.GetDailyApplicationsLast3Months(userId);
             return Json(data);
         }
 

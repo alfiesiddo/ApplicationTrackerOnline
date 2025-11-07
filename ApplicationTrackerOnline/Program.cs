@@ -1,5 +1,6 @@
 using ApplicationTrackerOnline.Data;
 using ApplicationTrackerOnline.Models;
+using ApplicationTrackerOnline.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,8 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+
+builder.Services.AddScoped<ApplicationStatsService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

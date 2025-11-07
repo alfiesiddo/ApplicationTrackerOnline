@@ -82,6 +82,26 @@ namespace ApplicationTrackerOnline.Services
 
             return output;
         }
+
+        //function that returns chart data of daily applications over the last 3 months
+        public async Task<List<DailyApplicationDTO>> GetDailyApplicationsLast3Months()
+        {
+            var threeMonthsAgo = DateTime.Now.AddMonths(-3);
+            
+            List<DailyApplicationDTO> dailyCounts = _context.jobApplications
+                    .Where(a => a.AppliedDate >= threeMonthsAgo)
+                    .GroupBy(a => a.AppliedDate.Date)
+                    .Select(g => new DailyApplicationDTO
+                    {
+                        Date = g.Key,
+                        Count = g.Count()
+                    })
+                    .OrderBy(x => x.Date)
+                    .ToList();        
+
+            return dailyCounts;
+        }
+
         //applications this month
         private async Task<int> applicationsThisMonth(string userId)
         {
@@ -114,11 +134,5 @@ namespace ApplicationTrackerOnline.Services
 
             return output;
         }
-
-
-        //function that returns chart data of daily applications over the last 3 months
-
-
-
     }
 }

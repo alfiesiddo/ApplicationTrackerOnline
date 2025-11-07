@@ -13,71 +13,102 @@
 {
     <div>
         <div class="card p-4 mb-4">
-            <h3>Daily Applications (Last 3 Months)</h3>
-            <br />
-            <canvas id="applicationsChart" height="100"></canvas>
+            <!-- THIS is the container your JS will inject the server-rendered partial into -->
+            <div id="applicationStagesContainer">
+                Loading application stages...
+            </div>
         </div>
         <div class="card p-4 mb-4">
-
+            <h3>Daily Applications (Last 3 Months)</h3>
+            <br />
+            <canvas id="applicationsChart" height="200"></canvas>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
-        // Example: replace this with your endpoint data
-        const chartData = [
-            {"date":"2025-11-05T00:00:00","count":3},
-            {"date":"2025-11-07T00:00:00","count":1}
-        ];
-
-        // 1️⃣ Generate all dates in the last 3 months
-        const today = new Date();
-        const startDate = new Date();
-        startDate.setMonth(startDate.getMonth() - 3);
-
-        const allDates = [];
-        for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
-            allDates.push(new Date(d));
-        }
-
-        // 2️⃣ Map counts to dates (fill missing with 0)
-        const dataMap = chartData.reduce((acc, item) => {
-            acc[new Date(item.date).toDateString()] = item.count;
-            return acc;
-        }, {});
-
-        const labels = allDates.map(d => d.toLocaleDateString());
-        const data = allDates.map(d => dataMap[d.toDateString()] || 0);
-
-        // 3️⃣ Create Chart.js chart
-        const ctx = document.getElementById('applicationsChart').getContext('2d');
-        const applicationsChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Applications',
-                    data: data,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.3,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: true },
-                    tooltip: { mode: 'index' }
-                },
-                scales: {
-                    x: { title: { display: true, text: 'Date' } },
-                    y: { title: { display: true, text: 'Applications' }, beginAtZero: true }
+        document.addEventListener('DOMContentLoaded', function () {
+            async function loadApplicationStagesPartial() {
+                try {
+                    const response = await fetch('@Url.Action("GetVaryingStages", "Home")');
+                    if (!response.ok) throw new Error('Failed to load partial: ' + response.status);
+                    const html = await response.text();
+                    document.getElementById('applicationStagesContainer').innerHTML = html;
+                } catch (err) {
+                    console.error(err);
+                    const el = document.getElementById('applicationStagesContainer');
+                    if (el) el.innerText = 'Failed to load application stages.';
                 }
             }
+
+            loadApplicationStagesPartial();
         });
+    </script>
+    <script>
+        async function loadApplicationsChart() {
+            try {
+                const response = await fetch('@Url.Action("GetDailyApplicationsChartData", "Home")');
+                if (!response.ok) throw new Error('Failed to fetch chart data');
+
+                const chartData = await response.json(); // expected format: [{ date: "2025-11-01T00:00:00", count: 3 }, ... ]
+
+                const today = new Date();
+                const startDate = new Date();
+                startDate.setMonth(startDate.getMonth() - 3);
+
+                const allDates = [];
+                for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+                    allDates.push(new Date(d));
+                }
+
+                const dataMap = chartData.reduce((acc, item) => {
+                    acc[new Date(item.date).toDateString()] = item.count;
+                    return acc;
+                }, {});
+
+                const labels = allDates.map(d => d.toLocaleDateString());
+                const data = allDates.map(d => dataMap[d.toDateString()] || 0);
+
+                const ctx = document.getElementById('applicationsChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Applications',
+                            data: data,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: true },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(ctx) { return ctx.raw + ' applications'; }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { title: { display: true, text: 'Date' } },
+                            y: { title: { display: true, text: 'Applications' }, beginAtZero: true }
+                        }
+                    }
+                });
+
+            } catch (err) {
+                console.error('Chart error:', err);
+            }
+        }
+
+        loadApplicationsChart();
     </script>
 }
 else

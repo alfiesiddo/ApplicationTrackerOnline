@@ -1,0 +1,33 @@
+﻿@model ApplicationTrackerOnline.Models.ApplicationStagesDTO
+
+<div class="application-stages-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+    <div class="status-applied p-4 rounded-lg shadow">
+        <h4 class="text-sm font-semibold">Applied</h4>
+        <p class="text-xl font-bold">@Model.appliedCount</p>
+    </div>
+
+    <div class="status-rejected p-4 rounded-lg shadow">
+        <h4 class="text-sm font-semibold">Rejected</h4>
+        <p class="text-xl font-bold">@Model.rejectedCount</p>
+    </div>
+
+    <div class="status-scouted p-4 rounded-lg shadow">
+        <h4 class="text-sm font-semibold">Scouted</h4>
+        <p class="text-xl font-bold">@Model.scoutedCount</p>
+    </div>
+
+    <div class="status-assessments p-4 rounded-lg shadow">
+        <h4 class="text-sm font-semibold">Assessments</h4>
+        <p class="text-xl font-bold">@Model.assessmentCount</p>
+    </div>
+
+    <div class="status-interview p-4 rounded-lg shadow">
+        <h4 class="text-sm font-semibold">Interview</h4>
+        <p class="text-xl font-bold">@Model.interviewCount</p>
+    </div>
+
+    <div class="status-offered p-4 rounded-lg shadow">
+        <h4 class="text-sm font-semibold">Offered</h4>
+        <p class="text-xl font-bold">@Model.offeredCount</p>
+    </div>
+</div>

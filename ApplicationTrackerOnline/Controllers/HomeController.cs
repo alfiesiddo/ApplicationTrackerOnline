@@ -114,16 +114,21 @@ namespace ApplicationTrackerOnline.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetVaryingStages()
+        public async Task <IActionResult> GetVaryingStages()
         {
+            _logger.LogInformation("GetVaryingStages action called.");
             var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
             {
+                _logger.LogWarning("User ID is null or empty.");
+                return Unauthorized();
             }
 
-            var data = _statsService.GetDifferentStages(userId);
+            _logger.LogInformation($"Fetching stages for user: {userId}");
+            var data = await _statsService.GetDifferentStages(userId);
+            _logger.LogInformation("Data fetched successfully.");
 
-            return Json(data);
+            return PartialView("_ApplicationStagesCard", data);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

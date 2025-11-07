@@ -3,16 +3,15 @@
     ViewData["Title"] = "Your Applications";
 
     var orderedApplications = Model
-        .OrderBy(a => a.Status) // Status 0 -> 5
+        .OrderBy(a => a.Status)
         .ThenBy(a => a.AppliedDate);
 }
 
-<div>
+<div class="text-center my-4">
     <h1 class="display-4">@ViewData["Title"]</h1>
 </div>
-<br>
 
-<div class="d-flex align-items-center gap-2 mb-3">
+<div class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
     <a class="btn btn-dark" asp-controller="Home" asp-action="AddApplication">
         Add Application
     </a>
@@ -28,16 +27,24 @@
     </select>
 </div>
 
-
 @Html.AntiForgeryToken()
-<div id="application-list">
-    @foreach (var app in orderedApplications)
-    {
-        @await Html.PartialAsync("_JobApplicationCard", app)
-    }
+
+<div class="container">
+    <div class="row justify-content-center g-4" id="application-list">
+        @foreach (var app in orderedApplications)
+        {
+            <div class="col-12 col-md-10 col-lg-8 d-flex justify-content-center"
+                 data-status="@app.Status"
+                 data-job-id="@app.Id">
+                <div class="w-100" style="max-width: 900px;">
+                    @await Html.PartialAsync("_JobApplicationCard", app)
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
-<!-- Existing script for status updates -->
+<!-- Existing script for status updates (small robust update to locate job id) -->
 <script>
     (function () {
         const STATUS_MAP = {
@@ -72,7 +79,10 @@
                 const text = await resp.text();
                 throw new Error(text || `Server responded ${resp.status}`);
             }
-            location.reload()
+            // NOTE: you currently reload the page after update. If you'd like
+            // the UI to remain fully "optimistic" without reload, remove the
+            // `location.reload()` line and rely on the returned result below.
+            location.reload();
             return await resp.json();
         }
 
@@ -90,10 +100,8 @@
         function openMenu(dropdown, toggle, menu) {
             menu.removeAttribute('hidden');
             toggle.setAttribute('aria-expanded', 'true');
-            // focus selected item if present
             const current = menu.querySelector('.status-item.current');
             (current || menu.querySelector('.status-item')).focus();
-            // add document click listener for outside clicks
             document.addEventListener('click', dropdown._outsideHandler = (ev) => {
                 if (!dropdown.contains(ev.target)) closeMenu(dropdown, toggle, menu);
             });
@@ -103,7 +111,6 @@
         function closeMenu(dropdown, toggle, menu) {
             menu.setAttribute('hidden', '');
             toggle.setAttribute('aria-expanded', 'false');
-            // cleanup handlers
             if (dropdown._outsideHandler) {
                 document.removeEventListener('click', dropdown._outsideHandler);
                 dropdown._outsideHandler = null;
@@ -145,10 +152,8 @@
                 e.preventDefault();
                 items[items.length - 1].focus();
             } else if (e.key === 'Tab') {
-                // close on tab to maintain natural tab order
                 closeMenu(dropdown, toggle, menu);
             } else if (e.key === 'Enter' || e.key === ' ') {
-                // Space or Enter selects
                 if (active && active.classList.contains('status-item')) {
                     e.preventDefault();
                     active.click();
@@ -159,17 +164,18 @@
         document.querySelectorAll('.status-dropdown').forEach(dropdown => {
             const toggle = dropdown.querySelector('.status-badge');
             const menu = dropdown.querySelector('.status-menu');
-            const jobId = dropdown.closest('.status-area')?.getAttribute('data-job-id');
+
+            // Robustly find the containing job id: look for nearest ancestor with data-job-id
+            const jobAncestor = dropdown.closest('[data-job-id]');
+            const jobId = jobAncestor ? jobAncestor.getAttribute('data-job-id') : null;
 
             if (!toggle || !menu || !jobId) return;
 
-            // wire toggle click
             toggle.addEventListener('click', (e) => {
                 e.stopPropagation();
                 toggleMenu(dropdown, toggle, menu);
             });
 
-            // allow keyboard on toggle
             toggle.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -177,16 +183,13 @@
                 }
             });
 
-            // item click handlers
             menu.querySelectorAll('.status-item').forEach(item => {
                 item.addEventListener('click', async (ev) => {
                     const selectedValue = item.getAttribute('data-value');
-                    // Optimistic UI: update local badge and mark current
                     setBadge(jobId, selectedValue);
                     menu.querySelectorAll('.status-item').forEach(i => i.classList.remove('current'));
                     item.classList.add('current');
 
-                    // close the menu
                     closeMenu(dropdown, toggle, menu);
                     toggle.focus();
 
@@ -194,7 +197,6 @@
                         const result = await updateStatusOnServer(jobId, selectedValue);
                         if (result && typeof result.status !== 'undefined') {
                             setBadge(jobId, result.status);
-                            // update current indicator based on server-returned status
                             menu.querySelectorAll('.status-item').forEach(i => {
                                 i.classList.toggle('current', i.getAttribute('data-value') == result.status);
                             });
@@ -206,32 +208,29 @@
                 });
             });
 
-            // Ensure menu items are focusable
             menu.querySelectorAll('.status-item').forEach(i => i.setAttribute('tabindex', '-1'));
         });
     })();
 </script>
 
-<!-- Script for handling dropdown filtering (no changes needed here) -->
+<!-- Script for handling dropdown filtering (fixed to select elements with data-status) -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const statusFilter = document.getElementById('statusFilter');
         const applicationList = document.getElementById('application-list');
-        // It's better to select children directly from the container
-        const allApplications = applicationList.children;
+
+        // Select all elements inside #application-list that carry data-status
+        const allApplications = applicationList.querySelectorAll('[data-status]');
 
         statusFilter.addEventListener('change', function () {
             const selectedStatus = this.value;
 
-            // Convert HTMLCollection to Array to use forEach
-            Array.from(allApplications).forEach(function (card) {
-                // Ensure we're only acting on elements that have the data-status attribute
-                if (card.hasAttribute('data-status')) {
-                    if (selectedStatus === 'all' || card.getAttribute('data-status') === selectedStatus) {
-                        card.style.display = ''; // Show the card
-                    } else {
-                        card.style.display = 'none'; // Hide the card
-                    }
+            allApplications.forEach(function (card) {
+                const cardStatus = card.getAttribute('data-status');
+                if (selectedStatus === 'all' || cardStatus === selectedStatus) {
+                    card.style.display = ''; // show
+                } else {
+                    card.style.display = 'none'; // hide
                 }
             });
         });

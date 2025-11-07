@@ -2,19 +2,45 @@
     ViewData["Title"] = "Add New Application";
 }
 
-<div class="text-center">
+<div class="text-center my-4">
     <h1 class="display-4">@ViewData["Title"]</h1>
 </div>
 
 <div class="container">
-    <form method="post" asp-controller="Home" asp-action="AddNewApplication" autocomplete="off">
+    <div class="row justify-content-center" >
+        <div class="col-md-6">
+            <form method="post" asp-controller="Home" asp-action="AddNewApplication" autocomplete="off" class="p-4 border rounded shadow-sm bg-white">
 
-        <input type="text" id="Company" name="Company" placeholder="Company" />
-        <input type="text" id="Role" name="Role" placeholder="Role" />
-        <input type="text" id="Location" name="Location" placeholder="Location" />
-        <input type="number" id="Salary" name="Salary" placeholder="Salary" />
-        <input type="url" id="Portal" name="Portal" placeholder="Portal URL" />
+                <div class="mb-3">
+                    <label for="Company" class="form-label">Company</label>
+                    <input type="text" id="Company" name="Company" placeholder="Enter company name" class="form-control" />
+                </div>
 
-        <button type="submit">Submit</button>
-    </form>
+                <div class="mb-3">
+                    <label for="Role" class="form-label">Role</label>
+                    <input type="text" id="Role" name="Role" placeholder="Enter role" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="Location" class="form-label">Location</label>
+                    <input type="text" id="Location" name="Location" placeholder="Enter location" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="Salary" class="form-label">Salary</label>
+                    <input type="number" id="Salary" name="Salary" placeholder="Enter salary" class="form-control" />
+                </div>
+
+                <div class="mb-4">
+                    <label for="Portal" class="form-label">Portal URL</label>
+                    <input type="url" id="Portal" name="Portal" placeholder="Enter portal URL" class="form-control" />
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-dark btn-lg w-100">Submit</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
 </div>

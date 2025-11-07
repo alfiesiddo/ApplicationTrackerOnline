@@ -2,7 +2,7 @@
 @inject SignInManager<ApplicationUser> SignInManager
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
 }
 
 <div>
@@ -45,7 +45,7 @@
             loadApplicationStagesPartial();
         });
     </script>
-    <script>
+    <script> 
         async function loadApplicationsChart() {
             try {
                 const response = await fetch('@Url.Action("GetDailyApplicationsChartData", "Home")');

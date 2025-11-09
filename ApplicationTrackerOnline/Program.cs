@@ -52,10 +52,12 @@ else
 
 app.Use(async (context, next) =>
 {
-    var allowedHosts = new[] { "applicationtracker.asiddons.co.uk", "localhost" };
     var requestHost = context.Request.Host.Host?.ToLowerInvariant();
 
-    if (!allowedHosts.Contains(requestHost))
+    if (string.IsNullOrEmpty(requestHost) ||
+        !(requestHost == "applicationtracker.asiddons.co.uk" ||
+          requestHost == "www.applicationtracker.asiddons.co.uk" ||
+          requestHost == "localhost"))
     {
         context.Response.StatusCode = 403;
         await context.Response.WriteAsync("Forbidden");

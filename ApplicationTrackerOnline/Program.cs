@@ -50,6 +50,21 @@ else
     app.UseHsts();
 }
 
+app.Use(async (context, next) =>
+{
+    var allowedHosts = new[] { "applicationtracker.asiddons.co.uk", "localhost" };
+    var requestHost = context.Request.Host.Host?.ToLowerInvariant();
+
+    if (!allowedHosts.Contains(requestHost))
+    {
+        context.Response.StatusCode = 403;
+        await context.Response.WriteAsync("Forbidden");
+        return;
+    }
+
+    await next();
+});
+
 app.UseHttpsRedirection();
 app.UseRouting();
 

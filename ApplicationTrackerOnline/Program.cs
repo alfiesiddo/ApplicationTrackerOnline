@@ -60,7 +60,7 @@ app.Use(async (context, next) =>
           requestHost == "localhost"))
     {
         context.Response.StatusCode = 403;
-        await context.Response.WriteAsync("Forbidden");
+        await context.Response.WriteAsync($"Forbidden \n\nThe domain '{requestHost}' is fraudulently posing as 'www.applicationtracker.asiddons.co.uk' and has tried redirecting you. This was likely done with malicious intent. \n\nPlease report '{requestHost}' to Cloudflare");
         return;
     }
 

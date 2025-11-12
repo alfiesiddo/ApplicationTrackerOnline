@@ -37,7 +37,42 @@ namespace ApplicationTrackerOnline.Controllers
 
             return Ok(new { access_token = token, token_type = "Bearer", expires_in = 3600 });
         }
+
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+                return BadRequest(new { error = "Email and password are required." });
+
+            var existingUser = await _userManager.FindByEmailAsync(dto.Email);
+            if (existingUser != null)
+                return Conflict(new { error = "Email is already registered." });
+
+            var user = new ApplicationUser
+            {
+                UserName = dto.Email,
+                Email = dto.Email,
+                EmailConfirmed = true
+            };
+
+            var result = await _userManager.CreateAsync(user, dto.Password);
+
+            if (!result.Succeeded)
+                return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+
+            //auto-login and return JWT
+            var token = _jwt.GenerateToken(user);
+
+            return Ok(new
+            {
+                message = "User registered successfully.",
+                access_token = token,
+                token_type = "Bearer"
+            });
+        }
     }
 
+    public record RegisterDto(string Email, string Password);
     public record LoginDto(string Email, string Password);
 }

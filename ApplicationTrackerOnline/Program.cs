@@ -69,6 +69,8 @@ builder.Services.AddScoped<JwtService>();
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

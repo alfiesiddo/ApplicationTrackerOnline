@@ -11,6 +11,21 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+//JWT CONFIGURATION START
+var jwtSection = builder.Configuration.GetSection("Jwt");
+builder.Services.Configure<ApplicationTrackerOnline.Services.JwtOptions>(jwtSection);
+
+var jwtKey = jwtSection.GetValue<string>("Key") ?? throw new Exception("Jwt:Key missing from appsettings.json");
+var jwtIssuer = jwtSection.GetValue<string>("Issuer") ?? "ApplicationTrackerOnline";
+var jwtAudience = jwtSection.GetValue<string>("Audience") ?? "ApplicationTrackerClients";
+
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                       ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
@@ -32,14 +47,6 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 builder.Services.AddScoped<ApplicationStatsService>();
-
-//JWT CONFIGURATION START
-var jwtSection = builder.Configuration.GetSection("Jwt");
-builder.Services.Configure<ApplicationTrackerOnline.Services.JwtOptions>(jwtSection);
-
-var jwtKey = jwtSection.GetValue<string>("Key") ?? throw new Exception("Jwt:Key missing from appsettings.json");
-var jwtIssuer = jwtSection.GetValue<string>("Issuer") ?? "ApplicationTrackerOnline";
-var jwtAudience = jwtSection.GetValue<string>("Audience") ?? "ApplicationTrackerClients";
 
 builder.Services.AddAuthentication(options =>
 {
@@ -64,8 +71,6 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddScoped<JwtService>();
-//JWT CONFIGURATION END
-
 
 var app = builder.Build();
 
@@ -99,8 +104,22 @@ app.Use(async (context, next) =>
         await context.Response.WriteAsync($"Forbidden\n\nThe domain '{requestHost}' is not allowed.");
         return;
     }
+    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
 
-    await next();
+    try
+    {
+        // 2. The original call is now inside the 'try' block
+        await next();
+    }
+    catch (Exception ex)
+    {
+        // 3. If an exception happens deeper in the application, we catch it here
+        logger.LogError(ex, "!!!!!! DEEPER EXCEPTION CAUGHT in custom middleware !!!!!!");
+
+        // 4. Re-throw the exception so the application still behaves the same way
+        //    and the default error handler can still process it.
+        throw;
+    }
 });
 
 app.UseHttpsRedirection();

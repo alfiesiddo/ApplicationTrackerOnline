@@ -367,4 +367,4 @@ FodyWeavers.xsd
 /ApplicationTrackerOnline/appsettings.json
 
 #publish files
-/publish-linux
+publish-linux/

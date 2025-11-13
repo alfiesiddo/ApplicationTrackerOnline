@@ -71,7 +71,7 @@ namespace ApplicationTrackerOnline.Controllers
                 token_type = "Bearer"
             });
         }
-    }
+    }//test
 
     public record RegisterDto(string Email, string Password);
     public record LoginDto(string Email, string Password);

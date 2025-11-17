@@ -11,13 +11,15 @@ namespace ApplicationTrackerOnline.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ILogger<AuthController> _logger;
         private readonly JwtService _jwt;
 
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, JwtService jwt)
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, JwtService jwt, ILogger<AuthController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _jwt = jwt;
+            _logger = logger;
         }
 
         [HttpPost("login")]
@@ -33,11 +35,17 @@ namespace ApplicationTrackerOnline.Controllers
             if (!result.Succeeded)
                 return Unauthorized(new { error = "Invalid email or password." });
 
-            var token = _jwt.GenerateToken(user);
-
-            return Ok(new { access_token = token, token_type = "Bearer", expires_in = 3600 });
+            try
+            {
+                var token = _jwt.GenerateToken(user);
+                return Ok(new { access_token = token, token_type = "Bearer", expires_in = 3600 });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Token generation failed for user {UserId}", user.Id);
+                return StatusCode(500, new { error = "Token generation failed", details = ex.Message });
+            }
         }
-
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
@@ -45,6 +53,7 @@ namespace ApplicationTrackerOnline.Controllers
             if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
                 return BadRequest(new { error = "Email and password are required." });
 
+            // Check if user exists
             var existingUser = await _userManager.FindByEmailAsync(dto.Email);
             if (existingUser != null)
                 return Conflict(new { error = "Email is already registered." });
@@ -61,18 +70,30 @@ namespace ApplicationTrackerOnline.Controllers
             if (!result.Succeeded)
                 return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
 
-            //auto-login and return JWT
-            var token = _jwt.GenerateToken(user);
-
-            return Ok(new
+            try
             {
-                message = "User registered successfully.",
-                access_token = token,
-                token_type = "Bearer"
-            });
-        }
-    }//test
+                var token = _jwt.GenerateToken(user);
 
-    public record RegisterDto(string Email, string Password);
+                return Ok(new
+                {
+                    message = "User registered successfully.",
+                    access_token = token,
+                    token_type = "Bearer",
+                    expires_in = 3600
+                });
+            }
+            catch (Exception ex)
+            {
+                // Log the full exception (stack trace, inner exception, everything)
+                _logger.LogError(ex, "Token generation failed during registration for user {Email}", dto.Email);
+
+                // Safe return for clients
+                return StatusCode(500, new { error = "Token generation failed", details = ex.Message });
+            }
+        }
+    }
+
+
+        public record RegisterDto(string Email, string Password);
     public record LoginDto(string Email, string Password);
 }

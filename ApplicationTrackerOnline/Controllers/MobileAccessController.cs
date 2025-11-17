@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.Elfie.Model.Strings;
 using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -63,6 +64,26 @@ namespace ApplicationTrackerOnline.Controllers
             return Ok("Application Added");
         }
 
+        [HttpPost("deleteapplication")]
+        public async Task<IActionResult> DeleteApplication(int Id)
+        {
+            string userId = await GetUserId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var app = _context.jobApplications.FirstOrDefault(x => x.Id == Id);
+
+            if (app != null)
+            {
+                _context.jobApplications.Remove(app);
+                _context.SaveChanges();
+            }
+            return Ok("Application Deleted");
+
+        }
 
         private async Task<string> GetUserId()
         {

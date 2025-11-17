@@ -72,7 +72,7 @@ namespace ApplicationTrackerOnline.Controllers
             {
                 _context.jobApplications.Remove(application);
                 await _context.SaveChangesAsync();
-            }
+        
 
             return RedirectToAction("Applications", "Home");
         }

@@ -70,6 +70,22 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            // Return a completed task to prevent the redirect.
+            return Task.CompletedTask;
+        }
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+});
+
+
 builder.Services.AddScoped<JwtService>();
 
 var app = builder.Build();

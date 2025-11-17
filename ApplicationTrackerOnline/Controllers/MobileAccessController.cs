@@ -64,7 +64,8 @@ namespace ApplicationTrackerOnline.Controllers
             return Ok("Application Added");
         }
 
-        [HttpPost("deleteapplication")]
+        [HttpDelete("deleteapplication")]
+        [Authorize(AuthenticationSchemes = "JwtScheme")]
         public async Task<IActionResult> DeleteApplication(int Id)
         {
             string userId = await GetUserId();

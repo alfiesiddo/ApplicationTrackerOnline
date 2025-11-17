@@ -68,12 +68,13 @@ namespace ApplicationTrackerOnline.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteApplication(JobApplication application)
         {
-            if (application != null) 
+            if (application != null)
             {
                 _context.jobApplications.Remove(application);
                 await _context.SaveChangesAsync();
-        
 
+                return RedirectToAction("Applications", "Home");
+            }
             return RedirectToAction("Applications", "Home");
         }
 

@@ -3,13 +3,10 @@ using ApplicationTrackerOnline.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Elfie.Model.Strings;
-using Microsoft.CodeAnalysis.Elfie.Serialization;
+
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Text;
-using System.Threading.Tasks;
+
+
 
 namespace ApplicationTrackerOnline.Controllers
 {
@@ -84,6 +81,26 @@ namespace ApplicationTrackerOnline.Controllers
             }
             return Ok("Application Deleted");
 
+        }
+
+        [HttpPatch("updatestatus")]
+        [Authorize(AuthenticationSchemes = "JwtScheme")]
+        public async Task<IActionResult> UpdateApplicationStatus(int Id, int status)
+        {
+            string userId = await GetUserId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var application = await _context.jobApplications.FindAsync(Id);
+            if(application != null)
+            {
+                application.Status = status;
+                await _context.SaveChangesAsync();
+            }
+            return Ok($"Application:{application.Role} Status Updated to {status}");
         }
 
         private async Task<string> GetUserId()

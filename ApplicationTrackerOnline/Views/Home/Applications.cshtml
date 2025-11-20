@@ -228,7 +228,7 @@
             allApplications.forEach(function (card) {
                 const cardStatus = card.getAttribute('data-status');
                 if (selectedStatus === 'all' || cardStatus === selectedStatus) {
-                    card.style.display = ''; // show
+                    card.style.display = 'flex'; // show
                 } else {
                     card.style.display = 'none'; // hide
                 }

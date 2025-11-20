@@ -228,9 +228,12 @@
             allApplications.forEach(function (card) {
                 const cardStatus = card.getAttribute('data-status');
                 if (selectedStatus === 'all' || cardStatus === selectedStatus) {
-                    card.style.display = 'flex'; // show
+                    // FIX: Use Bootstrap's d-none class to correctly show/hide column elements
+                    // Removing d-none restores the element to its original display properties (like d-flex from its Bootstrap classes)
+                    card.classList.remove('d-none'); // show
                 } else {
-                    card.style.display = 'none'; // hide
+                    // Adding d-none sets display: none !important
+                    card.classList.add('d-none'); // hide
                 }
             });
         });

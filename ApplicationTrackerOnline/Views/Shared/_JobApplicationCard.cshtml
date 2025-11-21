@@ -72,7 +72,7 @@
                                 var isCurrent = Model.Status == s.value;
                                 <button type="button"
                                         class="status-item @(isCurrent ? "current" : "")"
-                                        data-value="@s.value"
+                                        data-value="@s.value" 
                                         role="menuitem"
                                         id="status-item-@Model.Id-@s.value"
                                         @(isCurrent ? "aria-current=\"true\"" : "")>

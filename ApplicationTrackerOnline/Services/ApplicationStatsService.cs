@@ -40,7 +40,7 @@ namespace ApplicationTrackerOnline.Services
                 .CountAsync(j => j.UserId == userId && j.Status == 0);
 
             var appliedCount = await _context.jobApplications
-                .CountAsync(j => j.UserId == userId && j.Status == 1);
+                .CountAsync(j => j.UserId == userId);
 
             var scoutedCount = await _context.jobApplications
                 .CountAsync(j => j.UserId == userId && j.Status == 2);

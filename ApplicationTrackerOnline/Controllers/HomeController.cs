@@ -99,8 +99,13 @@ namespace ApplicationTrackerOnline.Controllers
                         application.InterviewDate = model.Date;
                     }
                 }
+                else
+                {
+                    application.InterviewDate = null;
+                    application.AssessmentDeadline = null;
+                }
 
-                await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
             }
             return Json(new { status = application.Status });
         }

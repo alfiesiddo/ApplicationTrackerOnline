@@ -55,7 +55,15 @@
                 <form id="statusDateForm">
                     <div class="mb-3">
                         <label for="statusDateInput" class="form-label" id="dateInputLabel">Select Date</label>
-                        <input type="datetime-local" class="form-control" id="statusDateInput" required>
+
+                        <input type="datetime-local" 
+                               class="form-control" 
+                               id="statusDateInput" 
+                               required
+                               style="cursor: pointer; caret-color: transparent;"
+                               onclick="try{this.showPicker()}catch(e){}"
+                               onfocus="try{this.showPicker()}catch(e){}"
+                               onkeydown="return false">
                     </div>
                 </form>
             </div>

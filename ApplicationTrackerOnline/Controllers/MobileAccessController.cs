@@ -85,7 +85,7 @@ namespace ApplicationTrackerOnline.Controllers
 
         [HttpPatch("updatestatus")]
         [Authorize(AuthenticationSchemes = "JwtScheme")]
-        public async Task<IActionResult> UpdateApplicationStatus(int Id, int status)
+        public async Task<IActionResult> UpdateApplicationStatus(int Id, int status, DateTime? date)
         {
             string userId = await GetUserId();
 
@@ -93,13 +93,36 @@ namespace ApplicationTrackerOnline.Controllers
             {
                 return Unauthorized();
             }
-
+            
             var application = await _context.jobApplications.FindAsync(Id);
-            if(application != null)
+            
+            if(application == null)
             {
-                application.Status = status;
-                await _context.SaveChangesAsync();
+                return NotFound("Application not found");
             }
+          
+            application.Status = status;
+
+            if(date != null && date.HasValue)
+            {
+                if (status == 3)
+                {
+                    application.AssessmentDeadline = date.Value;
+                }
+                else if (status == 4)
+                {
+                    application.InterviewDate = date.Value;
+                }
+                else
+                {
+                    application.InterviewDate = null;
+                    application.AssessmentDeadline = null;
+                }
+            }
+
+
+                await _context.SaveChangesAsync();
+            
             return Ok($"Application:{application.Role} Status Updated to {status}");
         }
 

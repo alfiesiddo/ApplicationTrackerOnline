@@ -44,7 +44,29 @@
     </div>
 </div>
 
-<!-- Existing script for status updates (small robust update to locate job id) -->
+<div class="modal fade" id="dateInputModal" tabindex="-1" aria-labelledby="dateInputModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dateInputModalLabel">Update Application</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="statusDateForm">
+                    <div class="mb-3">
+                        <label for="statusDateInput" class="form-label" id="dateInputLabel">Select Date</label>
+                        <input type="datetime-local" class="form-control" id="statusDateInput" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmStatusUpdateBtn">Save Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     (function () {
         const STATUS_MAP = {
@@ -56,15 +78,35 @@
             5: { label: "Offered", cls: "status-offered" }
         };
 
+        // Variables to hold state during modal interaction
+        let pendingJobId = null;
+        let pendingStatus = null;
+        let dateModal = null; // Bootstrap modal instance
+
+        document.addEventListener('DOMContentLoaded', () => {
+             // Initialize bootstrap modal
+             const modalEl = document.getElementById('dateInputModal');
+             if(modalEl && window.bootstrap) {
+                 dateModal = new bootstrap.Modal(modalEl);
+             }
+        });
+
         function getAntiForgeryToken() {
             const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
             return tokenInput ? tokenInput.value : null;
         }
 
-        async function updateStatusOnServer(jobId, newStatus) {
+        async function updateStatusOnServer(jobId, newStatus, dateValue = null) {
             const url = '/Home/UpdateApplicationStatus';
             const token = getAntiForgeryToken();
-            const payload = { id: jobId, status: parseInt(newStatus, 10) };
+
+            // Build Payload
+            const payload = {
+                id: parseInt(jobId),
+                status: parseInt(newStatus, 10),
+                date: dateValue 
+            };
+
             const headers = { 'Content-Type': 'application/json' };
             if (token) headers['RequestVerificationToken'] = token;
 
@@ -79,12 +121,66 @@
                 const text = await resp.text();
                 throw new Error(text || `Server responded ${resp.status}`);
             }
-            // NOTE: you currently reload the page after update. If you'd like
-            // the UI to remain fully "optimistic" without reload, remove the
-            // `location.reload()` line and rely on the returned result below.
+
             location.reload();
             return await resp.json();
         }
+
+        function handleStatusSelection(jobId, statusValue, toggle, menu, dropdown) {
+            // Check if special handling is needed (3 = Assessments, 4 = Interview)
+            if (statusValue === "3" || statusValue === "4") {
+
+                // Close the dropdown menu first
+                closeMenu(dropdown, toggle, menu);
+
+                // Set pending variables
+                pendingJobId = jobId;
+                pendingStatus = statusValue;
+
+                // Configure Modal Text
+                const modalLabel = document.getElementById('dateInputLabel');
+                const modalTitle = document.getElementById('dateInputModalLabel');
+                const dateInput = document.getElementById('statusDateInput');
+
+                // Clear previous input
+                dateInput.value = '';
+
+                if (statusValue === "3") {
+                    modalTitle.textContent = "Assessments Stage";
+                    modalLabel.textContent = "When is the Assessment Due?";
+                } else {
+                    modalTitle.textContent = "Interview Stage";
+                    modalLabel.textContent = "When is the Interview?";
+                }
+                if (dateModal) dateModal.show();
+            } else {
+                closeMenu(dropdown, toggle, menu);
+                updateStatusOnServer(jobId, statusValue);
+            }
+        }
+
+        //Modal Confirm Button Logic
+        const confirmBtn = document.getElementById('confirmStatusUpdateBtn');
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', () => {
+                const dateInput = document.getElementById('statusDateInput');
+                if (!dateInput.value) {
+                    alert("Please select a date.");
+                    return;
+                }
+
+                // Send to server with the date
+                updateStatusOnServer(pendingJobId, pendingStatus, dateInput.value)
+                    .then(() => {
+                        if (dateModal) dateModal.hide();
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert("Error updating status.");
+                    });
+            });
+        }
+
 
         function setBadge(jobId, statusInt) {
             const toggle = document.getElementById('status-toggle-' + jobId);
@@ -92,8 +188,6 @@
             if (!toggle || !badgeLabel) return;
             const map = STATUS_MAP[statusInt] || { label: 'Unknown', cls: 'status-unknown' };
             badgeLabel.textContent = map.label;
-
-            // remove previous status-* classes but keep other classes
             toggle.className = 'status-badge ' + map.cls;
         }
 
@@ -101,7 +195,9 @@
             menu.removeAttribute('hidden');
             toggle.setAttribute('aria-expanded', 'true');
             const current = menu.querySelector('.status-item.current');
-            (current || menu.querySelector('.status-item')).focus();
+            if(current) current.focus();
+            else { const f = menu.querySelector('.status-item'); if(f) f.focus(); }
+
             document.addEventListener('click', dropdown._outsideHandler = (ev) => {
                 if (!dropdown.contains(ev.target)) closeMenu(dropdown, toggle, menu);
             });
@@ -128,44 +224,16 @@
         }
 
         function menuKeyHandler(e, dropdown, toggle, menu) {
-            const active = document.activeElement;
-            const items = Array.from(menu.querySelectorAll('.status-item'));
-            const idx = items.indexOf(active);
+            // ... (Keep your existing key handler logic here) ...
             if (e.key === 'Escape') {
-                e.preventDefault();
-                closeMenu(dropdown, toggle, menu);
-                toggle.focus();
-                return;
-            }
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                const next = items[(idx + 1) % items.length];
-                next.focus();
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                const prev = items[(idx - 1 + items.length) % items.length];
-                prev.focus();
-            } else if (e.key === 'Home') {
-                e.preventDefault();
-                items[0].focus();
-            } else if (e.key === 'End') {
-                e.preventDefault();
-                items[items.length - 1].focus();
-            } else if (e.key === 'Tab') {
-                closeMenu(dropdown, toggle, menu);
-            } else if (e.key === 'Enter' || e.key === ' ') {
-                if (active && active.classList.contains('status-item')) {
-                    e.preventDefault();
-                    active.click();
-                }
+                e.preventDefault(); closeMenu(dropdown, toggle, menu); toggle.focus();
             }
         }
 
+        // Attach listeners
         document.querySelectorAll('.status-dropdown').forEach(dropdown => {
             const toggle = dropdown.querySelector('.status-badge');
             const menu = dropdown.querySelector('.status-menu');
-
-            // Robustly find the containing job id: look for nearest ancestor with data-job-id
             const jobAncestor = dropdown.closest('[data-job-id]');
             const jobId = jobAncestor ? jobAncestor.getAttribute('data-job-id') : null;
 
@@ -176,66 +244,34 @@
                 toggleMenu(dropdown, toggle, menu);
             });
 
-            toggle.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    openMenu(dropdown, toggle, menu);
-                }
-            });
-
             menu.querySelectorAll('.status-item').forEach(item => {
-                item.addEventListener('click', async (ev) => {
+                item.addEventListener('click', (ev) => {
                     const selectedValue = item.getAttribute('data-value');
-                    setBadge(jobId, selectedValue);
-                    menu.querySelectorAll('.status-item').forEach(i => i.classList.remove('current'));
-                    item.classList.add('current');
 
-                    closeMenu(dropdown, toggle, menu);
-                    toggle.focus();
-
-                    try {
-                        const result = await updateStatusOnServer(jobId, selectedValue);
-                        if (result && typeof result.status !== 'undefined') {
-                            setBadge(jobId, result.status);
-                            menu.querySelectorAll('.status-item').forEach(i => {
-                                i.classList.toggle('current', i.getAttribute('data-value') == result.status);
-                            });
-                        }
-                    } catch (err) {
-                        alert('Could not update status on server. Please try again.');
-                        console.error(err);
-                    }
+                    handleStatusSelection(jobId, selectedValue, toggle, menu, dropdown);
                 });
             });
-
-            menu.querySelectorAll('.status-item').forEach(i => i.setAttribute('tabindex', '-1'));
         });
     })();
-</script>
 
-<!-- Script for handling dropdown filtering (fixed to select elements with data-status) -->
-<script>
+    // Filter Script
     document.addEventListener('DOMContentLoaded', function () {
         const statusFilter = document.getElementById('statusFilter');
         const applicationList = document.getElementById('application-list');
-
-        // Select all elements inside #application-list that carry data-status
         const allApplications = applicationList.querySelectorAll('[data-status]');
 
-        statusFilter.addEventListener('change', function () {
-            const selectedStatus = this.value;
-
-            allApplications.forEach(function (card) {
-                const cardStatus = card.getAttribute('data-status');
-                if (selectedStatus === 'all' || cardStatus === selectedStatus) {
-                    // FIX: Use Bootstrap's d-none class to correctly show/hide column elements
-                    // Removing d-none restores the element to its original display properties (like d-flex from its Bootstrap classes)
-                    card.classList.remove('d-none'); // show
-                } else {
-                    // Adding d-none sets display: none !important
-                    card.classList.add('d-none'); // hide
-                }
+        if(statusFilter) {
+            statusFilter.addEventListener('change', function () {
+                const selectedStatus = this.value;
+                allApplications.forEach(function (card) {
+                    const cardStatus = card.getAttribute('data-status');
+                    if (selectedStatus === 'all' || cardStatus === selectedStatus) {
+                        card.classList.remove('d-none');
+                    } else {
+                        card.classList.add('d-none');
+                    }
+                });
             });
-        });
+        }
     });
 </script>

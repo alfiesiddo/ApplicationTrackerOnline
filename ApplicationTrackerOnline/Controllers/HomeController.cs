@@ -86,6 +86,20 @@ namespace ApplicationTrackerOnline.Controllers
             if (application != null)
             {
                 application.Status = model.Status;
+
+                // Save date based on specific statuses
+                if (model.Date.HasValue)
+                {
+                    if (model.Status == 3) // Assessments
+                    {
+                        application.AssessmentDeadline = model.Date;
+                    }
+                    else if (model.Status == 4) // Interview
+                    {
+                        application.InterviewDate = model.Date;
+                    }
+                }
+
                 await _context.SaveChangesAsync();
             }
             return Json(new { status = application.Status });

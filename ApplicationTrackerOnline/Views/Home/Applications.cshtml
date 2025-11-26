@@ -4,7 +4,7 @@
 
     var orderedApplications = Model
         .OrderBy(a => a.Status)
-        .ThenBy(a => a.AppliedDate);
+        .ThenByDescending(a => a.AppliedDate);
 }
 
 <div class="text-center my-4">

@@ -23,6 +23,9 @@ namespace ApplicationTrackerOnline.Models
 
         public DateTime AppliedDate { get; set; } = DateTime.Now;
 
+        public DateTime? AssessmentDeadline { get; set; }
+        public DateTime? InterviewDate { get; set; }
+
 
         public JobApplication() { }
 

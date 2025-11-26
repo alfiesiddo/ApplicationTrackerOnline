@@ -103,25 +103,24 @@ namespace ApplicationTrackerOnline.Controllers
           
             application.Status = status;
 
-            if(date != null && date.HasValue)
+            if (status == 3)
             {
-                if (status == 3)
-                {
-                    application.AssessmentDeadline = date.Value;
-                }
-                else if (status == 4)
-                {
-                    application.InterviewDate = date.Value;
-                }
-                else
-                {
-                    application.InterviewDate = null;
-                    application.AssessmentDeadline = null;
-                }
+                application.AssessmentDeadline = date; // can be null
+                application.InterviewDate = null;
+            }
+            else if (status == 4)
+            {
+                application.InterviewDate = date; // can be null
+                application.AssessmentDeadline = null;
+            }
+            else
+            {
+                application.InterviewDate = null;
+                application.AssessmentDeadline = null;
             }
 
 
-                await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             
             return Ok($"Application:{application.Role} Status Updated to {status}");
         }

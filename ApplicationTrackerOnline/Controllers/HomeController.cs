@@ -42,6 +42,30 @@ namespace ApplicationTrackerOnline.Controllers
             return View(applications);
         }
 
+        public async Task<IActionResult> Assessments()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            var interviews = await _context.jobApplications.Where(l => l.UserId == userId && l.AssessmentDeadline >= DateTime.Now.AddDays(31) && l.AssessmentDeadline <= DateTime.Now).ToListAsync();
+
+            return Ok(interviews);
+        }
+
+        public async Task<IActionResult> Interviews()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            var interviews = await _context.jobApplications.Where(l => l.UserId == userId && l.InterviewDate >= DateTime.Now.AddDays(31) && l.InterviewDate <= DateTime.Now).ToListAsync();
+
+            return Ok(interviews);
+        }
+
 
         public IActionResult AddApplication()
         {

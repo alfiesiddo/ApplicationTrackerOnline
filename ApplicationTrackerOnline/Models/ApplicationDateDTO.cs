@@ -7,7 +7,7 @@
 
         public override string ToString()
         {
-            return $"{Organization}: {Date:ddd dd MMM H:mm tt}";
+            return $"{Organization}: {Date:dddd dd MMMM h:mm tt}";
         }
 
     }

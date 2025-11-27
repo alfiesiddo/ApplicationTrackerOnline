@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
+@model List<ApplicationTrackerOnline.Models.ApplicationDateDTO>
 
 @{
     ViewData["Title"] = "Dashboard";
@@ -13,7 +14,7 @@
 {
     <div>
         <div class="card p-4 mb-4">
-            <!-- THIS is the container your JS will inject the server-rendered partial into -->
+            <!-- JS will inject the server-rendered partial into -->
             <div id="applicationStagesContainer">
                 Loading application stages...
             </div>
@@ -22,6 +23,10 @@
             <h3>Daily Applications (Last 3 Months)</h3>
             <br />
             <canvas id="applicationsChart" height="200"></canvas>
+        </div>
+        <div class="card p-4 mb-4">
+            <div id="interviewListContainer"></div>
+            <div id="assessmentsListContainer"></div>
         </div>
     </div>
 
@@ -51,7 +56,7 @@
                 const response = await fetch('@Url.Action("GetDailyApplicationsChartData", "Home")');
                 if (!response.ok) throw new Error('Failed to fetch chart data');
 
-                const chartData = await response.json(); // expected format: [{ date: "2025-11-01T00:00:00", count: 3 }, ... ]
+                const chartData = await response.json();
 
                 const today = new Date();
                 const startDate = new Date();
@@ -109,6 +114,47 @@
         }
 
         loadApplicationsChart();
+    </script>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            loadInterviews();
+            loadAssessments();
+        });
+
+        // --- Function 1: Load Interviews ---
+        function loadInterviews() {
+            fetch('@Url.Action("Interviews", "Home")')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
+                .then(html => {
+                    document.getElementById('interviewListContainer').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading interviews:', error);
+                    document.getElementById('interviewListContainer').innerHTML = "<p class='text-danger'>Error loading interviews.</p>";
+                });
+        }
+
+        // --- Function 2: Load Assessments (Renamed from loadInterviews) ---
+        function loadAssessments() {
+            fetch('@Url.Action("Assessments", "Home")')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
+                .then(html => {
+                    document.getElementById('assessmentsListContainer').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading assessments:', error);
+
+                    document.getElementById('assessmentsListContainer').innerHTML = "<p class='text-danger'>Error loading assessments.</p>";
+                });
+        }
     </script>
 }
 else

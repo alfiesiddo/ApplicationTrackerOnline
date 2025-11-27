@@ -1,0 +1,13 @@
+﻿@model List<ApplicationTrackerOnline.Models.ApplicationDateDTO>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var item in Model)
+    {
+        <partial name="_UpcomingDatesCard" model="item" />
+    }
+}
+else
+{
+    <p>No upcoming dates..</p>
+}

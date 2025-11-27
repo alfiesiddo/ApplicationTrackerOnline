@@ -49,9 +49,15 @@ namespace ApplicationTrackerOnline.Controllers
             {
                 return Unauthorized();
             }
-            var interviews = await _context.jobApplications.Where(l => l.UserId == userId && l.AssessmentDeadline >= DateTime.Now.AddDays(31) && l.AssessmentDeadline <= DateTime.Now).ToListAsync();
+            var entities = await _context.jobApplications.Where(l => l.UserId == userId && l.AssessmentDeadline >= DateTime.Today && l.AssessmentDeadline <= DateTime.Today.AddDays(31)).ToListAsync();
 
-            return Ok(interviews);
+            var model = entities.Select(e => new ApplicationTrackerOnline.Models.ApplicationDateDTO
+            {
+                Organization = e.CompanyName,
+                Date = e.AssessmentDeadline ?? DateTime.Now
+            }).ToList();
+
+            return PartialView("_InterviewList", model);
         }
 
         public async Task<IActionResult> Interviews()
@@ -61,9 +67,15 @@ namespace ApplicationTrackerOnline.Controllers
             {
                 return Unauthorized();
             }
-            var interviews = await _context.jobApplications.Where(l => l.UserId == userId && l.InterviewDate >= DateTime.Now.AddDays(31) && l.InterviewDate <= DateTime.Now).ToListAsync();
+            var entities = await _context.jobApplications.Where(l => l.UserId == userId&& l.InterviewDate >= DateTime.Today&& l.InterviewDate <= DateTime.Today.AddDays(31)).ToListAsync();
 
-            return Ok(interviews);
+            var model = entities.Select(e => new ApplicationTrackerOnline.Models.ApplicationDateDTO
+            {
+                Organization = e.CompanyName,
+                Date = e.InterviewDate ?? DateTime.Now
+            }).ToList();
+
+            return PartialView("_InterviewList", model);
         }
 
 

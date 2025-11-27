@@ -57,7 +57,7 @@ namespace ApplicationTrackerOnline.Controllers
                 Date = e.AssessmentDeadline ?? DateTime.Now
             }).ToList();
 
-            return PartialView("_InterviewList", model);
+            return PartialView("_AssessmentList", model);
         }
 
         public async Task<IActionResult> Interviews()

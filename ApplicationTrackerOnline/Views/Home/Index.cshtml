@@ -24,9 +24,15 @@
             <br />
             <canvas id="applicationsChart" height="200"></canvas>
         </div>
-        <div class="card p-4 mb-4">
-            <div id="interviewListContainer"></div>
-            <div id="assessmentsListContainer"></div>
+        <div class="card p-4 mb-4 d-flex flex-row gap-4">
+            <div class="flex-fill status-assessments p-3 rounded border shadow">
+                <h3>Assessment Deadlines</h3>
+                <div id="assessmentsListContainer"></div>
+            </div>
+            <div class="flex-fill status-interview p-3 rounded border shadow">
+                <h3>Interview Dates</h3>
+                <div id="interviewListContainer"></div>
+            </div>          
         </div>
     </div>
 
@@ -139,7 +145,7 @@
                 });
         }
 
-        // --- Function 2: Load Assessments (Renamed from loadInterviews) ---
+        // --- Function 2: Load Assessments ---
         function loadAssessments() {
             fetch('@Url.Action("Assessments", "Home")')
                 .then(response => {

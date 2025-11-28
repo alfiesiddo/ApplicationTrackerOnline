@@ -40,13 +40,13 @@ namespace ApplicationTrackerOnline.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<byte[]> GetSpreadsheet(int id)
+        public async Task<ApplicationsSpreadsheet> GetSpreadsheet(int id)
         {
             var sheet = await _context.applicationsSpreadsheets.FindAsync(id);
 
             if(sheet != null)
             {
-                return sheet.SheetData;
+                return sheet;
             }
             return null;
         }

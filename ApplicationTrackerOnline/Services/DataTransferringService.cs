@@ -35,6 +35,9 @@ namespace ApplicationTrackerOnline.Services
                 Location = a.Location,
                 Salary = a.Salary,
                 PortalURL = a.PortalURL,
+                AssessmentDeadline = a.AssessmentDeadline,
+                InterviewDate = a.InterviewDate
+
             }).ToList();
 
             await DeleteExcessSheets(userId);

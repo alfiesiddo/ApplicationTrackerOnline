@@ -14,5 +14,8 @@ namespace ApplicationTrackerOnline.Models
         public string PortalURL { get; set; }
 
         public string Status {  get; set; }
+
+        public DateTime? AssessmentDeadline { get; set; }
+        public DateTime? InterviewDate { get; set; }
     }
 }

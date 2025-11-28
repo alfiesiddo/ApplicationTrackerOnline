@@ -16,12 +16,33 @@ namespace ApplicationTrackerOnline.Services
 
         public async Task<int> CreateAndStoreSpreadsheet(List<JobApplication> applications, string userId)
         {
+
+            var exportList = applications.Select(a => new SpreadsheetExportDTO
+            {
+                Id = a.Id,
+                Status = a.Status switch
+                {
+                    0 => "Rejected",
+                    1 => "Applied",
+                    2 => "Scouted",
+                    3 => "Assessments",
+                    4 => "Interview",
+                    5=> "Offered",
+                    _ => "Unknown"
+                },
+                Role = a.Role,
+                CompanyName = a.CompanyName,
+                Location = a.Location,
+                Salary = a.Salary,
+                PortalURL = a.PortalURL,
+            }).ToList();
+
             await DeleteExcessSheets(userId);
             var workbook = new XLWorkbook();
             var ws = workbook.Worksheets.Add("Applications");
-            var table = ws.Cell(1, 1).InsertTable(applications, "ApplicationsTable", true);
+            var table = ws.Cell(1, 1).InsertTable(exportList, "ApplicationsTable", true);
 
-            table.Theme = XLTableTheme.TableStyleDark1;
+            table.Theme = XLTableTheme.TableStyleMedium1;
 
             ws.Columns().AdjustToContents();
 

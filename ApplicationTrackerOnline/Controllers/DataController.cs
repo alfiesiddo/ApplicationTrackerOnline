@@ -20,11 +20,12 @@ namespace ApplicationTrackerOnline.Controllers
         public DataController(DataTransferringService dataService, UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _dataService = dataService;
+            _userManager = userManager;
             _context = context;
         }
 
 
-        [HttpPatch]
+        [HttpPost]
         public async Task<IActionResult> CreateSheet()
         {
             var userId = _userManager.GetUserId(User);

@@ -5,11 +5,11 @@
 
 <ul class="nav nav-pills flex-column">
     <li>
-        <a class="btn btn-dark w-100" asp-page="./ChangePassword">Password</a>
+        <a class="btn btn-dark w-100" asp-page="./ChangePassword">Change Password</a>
 
         <form asp-controller="Data" asp-action="CreateSheet" method="post">
             @Html.AntiForgeryToken()
-            <button type="submit" class="btn btn-dark w-100 mt-2">Create Spreadsheet </button>
+            <button type="submit" class="btn btn-dark w-100 mt-2">Download Spreadsheet Of Your Applications </button>
         </form>
     </li>
 </ul>

@@ -14,10 +14,9 @@ namespace ApplicationTrackerOnline.Services
             _context = context;
         }
 
-        public async Task CreateAndStoreSpreadsheet(List<JobApplication> applications, string userId)
+        public async Task<int> CreateAndStoreSpreadsheet(List<JobApplication> applications, string userId)
         {
             await DeleteExcessSheets(userId);
-
             var workbook = new XLWorkbook();
             var ws = workbook.Worksheets.Add("Applications");
             var table = ws.Cell(1, 1).InsertTable(applications, "ApplicationsTable", true);
@@ -41,6 +40,8 @@ namespace ApplicationTrackerOnline.Services
 
             _context.applicationsSpreadsheets.Add(sheet);
             await _context.SaveChangesAsync();
+
+            return sheet.Id;
         }
 
         private async Task DeleteExcessSheets(string userId)

@@ -47,6 +47,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 builder.Services.AddScoped<ApplicationStatsService>();
+builder.Services.AddScoped<DataTransferringService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -124,16 +125,11 @@ app.Use(async (context, next) =>
 
     try
     {
-        // 2. The original call is now inside the 'try' block
         await next();
     }
     catch (Exception ex)
     {
-        // 3. If an exception happens deeper in the application, we catch it here
         logger.LogError(ex, "!!!!!! DEEPER EXCEPTION CAUGHT in custom middleware !!!!!!");
-
-        // 4. Re-throw the exception so the application still behaves the same way
-        //    and the default error handler can still process it.
         throw;
     }
 });

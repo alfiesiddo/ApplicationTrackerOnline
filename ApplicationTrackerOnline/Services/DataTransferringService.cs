@@ -2,6 +2,7 @@
 using ApplicationTrackerOnline.Models;
 
 using ClosedXML.Excel;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationTrackerOnline.Services
 {
@@ -15,6 +16,8 @@ namespace ApplicationTrackerOnline.Services
 
         public async Task CreateAndStoreSpreadsheet(List<JobApplication> applications, string userId)
         {
+            await DeleteExcessSheets(userId);
+
             var workbook = new XLWorkbook();
             var ws = workbook.Worksheets.Add("Applications");
             var table = ws.Cell(1, 1).InsertTable(applications, "ApplicationsTable", true);
@@ -38,6 +41,20 @@ namespace ApplicationTrackerOnline.Services
 
             _context.applicationsSpreadsheets.Add(sheet);
             await _context.SaveChangesAsync();
+        }
+
+        private async Task DeleteExcessSheets(string userId)
+        {
+            var sheets = await _context.applicationsSpreadsheets.Where(j => j.UserId == userId).ToListAsync();
+
+            if (sheets.Count >= 1)
+            {
+                foreach (var sheet in sheets)
+                {
+                    _context.Remove(sheet);
+                }
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task<ApplicationsSpreadsheet> GetSpreadsheet(int id)

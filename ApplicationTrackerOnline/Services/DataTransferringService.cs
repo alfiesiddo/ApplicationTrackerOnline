@@ -16,6 +16,7 @@ namespace ApplicationTrackerOnline.Services
 
         public async Task<int> CreateAndStoreSpreadsheet(List<JobApplication> applications, string userId)
         {
+            applications = applications.OrderBy(a => a.Status).ToList();
             var exportList = applications.Select(a => new SpreadsheetExportDTO
             {
                 Id = a.Id,

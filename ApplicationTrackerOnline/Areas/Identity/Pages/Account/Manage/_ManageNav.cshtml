@@ -1,15 +1,21 @@
 ﻿@inject SignInManager<ApplicationUser> SignInManager
 @{
     var currentPage = (ViewContext.RouteData.Values["page"] as string) ?? "";
+    var pageName = System.IO.Path.GetFileName(currentPage);
 }
 
 <ul class="nav nav-pills flex-column">
     <li>
-        <a class="btn btn-dark w-100" asp-page="./ChangePassword">Change Password</a>
 
-        <form asp-controller="Data" asp-action="CreateSheet" method="post">
-            @Html.AntiForgeryToken()
-            <button type="submit" class="btn btn-dark w-100 mt-2">Download Spreadsheet Of Your Applications </button>
-        </form>
+        @if(pageName != "ChangePassword")
+        {
+            <form asp-controller="Data" asp-action="CreateSheet" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-dark w-100 mt-2">Export My Applications (.xlsx format) </button>
+            </form>
+            <br />
+            <a class="btn btn-dark w-100" asp-page="./ChangePassword">Change Password</a>
+        }
+
     </li>
 </ul>

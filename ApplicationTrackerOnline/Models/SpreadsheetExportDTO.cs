@@ -9,7 +9,7 @@ namespace ApplicationTrackerOnline.Models
         public string Role { get; set; }
         public string CompanyName { get; set; }
         public string Location { get; set; }
-        public int Salary{get; set;}
+        public string Salary{get; set;}
 
         public string PortalURL { get; set; }
 

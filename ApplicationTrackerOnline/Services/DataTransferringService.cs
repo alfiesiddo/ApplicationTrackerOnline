@@ -16,7 +16,6 @@ namespace ApplicationTrackerOnline.Services
 
         public async Task<int> CreateAndStoreSpreadsheet(List<JobApplication> applications, string userId)
         {
-
             var exportList = applications.Select(a => new SpreadsheetExportDTO
             {
                 Id = a.Id,
@@ -27,33 +26,54 @@ namespace ApplicationTrackerOnline.Services
                     2 => "Scouted",
                     3 => "Assessments",
                     4 => "Interview",
-                    5=> "Offered",
+                    5 => "Offered",
                     _ => "Unknown"
                 },
                 Role = a.Role,
                 CompanyName = a.CompanyName,
                 Location = a.Location,
-                Salary = a.Salary,
+                Salary = $"£{a.Salary}",
                 PortalURL = a.PortalURL,
                 AssessmentDeadline = a.AssessmentDeadline,
                 InterviewDate = a.InterviewDate
-
             }).ToList();
 
             await DeleteExcessSheets(userId);
+
             var workbook = new XLWorkbook();
             var ws = workbook.Worksheets.Add("Applications");
             var table = ws.Cell(1, 1).InsertTable(exportList, "ApplicationsTable", true);
 
-            table.Theme = XLTableTheme.TableStyleMedium1;
+            table.ShowAutoFilter = false;
 
+            // Apply colors
+
+            int statusColumnIndex = table.Fields.First(f => f.Name == "Status").Index + 1;
+            foreach (var row in table.DataRange.Rows())
+            {
+                string status = row.Cell(statusColumnIndex).GetString();
+                var cell = row.Cell(statusColumnIndex);
+
+                cell.Style.Fill.BackgroundColor = status switch
+                {
+                    "Rejected" => XLColor.Red,
+                    "Applied" => XLColor.BabyBlue,
+                    "Scouted" => XLColor.Violet,
+                    "Assessments" => XLColor.DarkOrange,
+                    "Interview" => XLColor.MediumAquamarine,
+                    "Offered" => XLColor.Lime,
+                    _ => XLColor.White
+                };
+            }
+
+            table.Theme = XLTableTheme.TableStyleMedium1;
             ws.Columns().AdjustToContents();
 
-            var ms = new MemoryStream();
+            using var ms = new MemoryStream();
             workbook.SaveAs(ms);
-            byte[] bytes = ms.ToArray();
+            var bytes = ms.ToArray();
 
-            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+            var today = DateOnly.FromDateTime(DateTime.Now);
 
             var sheet = new ApplicationsSpreadsheet
             {
@@ -67,6 +87,7 @@ namespace ApplicationTrackerOnline.Services
 
             return sheet.Id;
         }
+
 
         private async Task DeleteExcessSheets(string userId)
         {

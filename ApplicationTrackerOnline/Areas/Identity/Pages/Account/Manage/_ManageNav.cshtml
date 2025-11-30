@@ -1,8 +1,14 @@
 ﻿@inject SignInManager<ApplicationUser> SignInManager
 @{
+    ViewData["Title"] = "Settings";
+
     var currentPage = (ViewContext.RouteData.Values["page"] as string) ?? "";
     var pageName = System.IO.Path.GetFileName(currentPage);
 }
+
+<div class="text-center">
+    <h1 class="display-4">@ViewData["Title"]</h1>
+</div>
 
 <ul class="nav nav-pills flex-column">
     <li>

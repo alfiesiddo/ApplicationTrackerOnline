@@ -6,7 +6,7 @@ HireHelper is a web application that provides users with a simple, easy-to-use d
 - Remove applications
 - Edit the status of applications
 - Filter results for specific requirements
-- Ability to add assessment/interview dates when the user changes the status to Assessment or Interview
+- Ability to add assessment/interview dates when the user changes aspplication status to "Assessment" or "Interview"
 - Download applications as a preformatted spreadsheet.
 
 ## Features To Implement

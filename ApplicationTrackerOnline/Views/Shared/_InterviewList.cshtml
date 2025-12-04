@@ -1,8 +1,10 @@
 ﻿@model List<ApplicationTrackerOnline.Models.ApplicationDateDTO>
-
+@{
+    var orderedList = Model.OrderBy(async => async.Date);
+}
 @if (Model != null && Model.Any())
 {
-    foreach (var item in Model)
+    foreach (var item in orderedList)
     {
         <partial name="_UpcomingInterCard" model="item" />
     }

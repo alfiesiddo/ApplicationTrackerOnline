@@ -1,18 +1,25 @@
 ﻿@model ApplicationTrackerOnline.Models.PotentialJob;
 
-<div class="job-card status-scouted">
-    <p>@Model.ToString()</p>
+<div>
+<div class="d-flex justify-content-between align-items-center">
 
-    <a class="btn" href="@Model.JobListing" target="_blank" rel="noopener">
-        Visit Listing
-    </a>
+    <!-- Item 1: The Job Title -->
+    <h4 class="mb-0">@Model.ToString()</h4>
 
-    <button type="button"
-            class="btn btn-dark"
-            data-bs-toggle="modal"
-            data-bs-target="#addApplicationModal-@Model.Id">
-        Add To Applications
-    </button>
+    <!-- Item 2: The Buttons (no longer needs ms-auto) -->
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-dark" href="@Model.JobListing" target="_blank" rel="noopener">
+            Visit Listing
+        </a>
+
+        <button type="button"
+                class="btn btn-outline-dark"
+                data-bs-toggle="modal"
+                data-bs-target="#addApplicationModal-@Model.Id">
+            Add To Applications
+        </button>
+    </div>
+</div>
 </div>
 
 <!-- Modal -->
@@ -101,7 +108,7 @@
 </div>
 
 <style>
-.modalText{
-    color: black;
-}
+    .modalText {
+        color: black;
+    }
 </style>

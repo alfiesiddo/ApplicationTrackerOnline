@@ -32,7 +32,13 @@
             <div class="flex-fill status-interview p-3 rounded border shadow">
                 <h3>Interview Dates</h3>
                 <div id="interviewListContainer"></div>
-            </div>          
+            </div>
+        </div>
+        <div class="card p-4 mb-4">
+            <div class="flex-fill status-scouted p-3 rounded border shadow">
+                <h3>Jobs To Apply For</h3>
+                <div id="potentialJobsContainer"></div>
+            </div>
         </div>
     </div>
 
@@ -124,12 +130,9 @@
 
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            loadInterviews();
-            loadAssessments();
-        });
-
-        // --- Function 1: Load Interviews ---
+        loadInterviews();
+        loadAssessments();
+        loadPotentialJobs();
         function loadInterviews() {
             fetch('@Url.Action("Interviews", "Home")')
                 .then(response => {
@@ -145,7 +148,6 @@
                 });
         }
 
-        // --- Function 2: Load Assessments ---
         function loadAssessments() {
             fetch('@Url.Action("Assessments", "Home")')
                 .then(response => {
@@ -157,8 +159,23 @@
                 })
                 .catch(error => {
                     console.error('Error loading assessments:', error);
-
                     document.getElementById('assessmentsListContainer').innerHTML = "<p class='text-danger'>Error loading assessments.</p>";
+                });
+        }
+
+        function loadPotentialJobs() {
+            fetch('@Url.Action("PotentialApplications", "Home")')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
+                .then(html => {
+                    document.getElementById('potentialJobsContainer').innerHTML = html;
+                })
+                .catch(error => {
+                    // Corrected this line: changed the semicolon to a closing parenthesis
+                    console.error('Error loading potential jobs:', error);
+                    document.getElementById('potentialJobsContainer').innerHTML = "<p class='text-danger'>Error loading potential jobs.</p>";
                 });
         }
     </script>

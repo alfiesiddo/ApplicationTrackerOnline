@@ -60,6 +60,20 @@ namespace ApplicationTrackerOnline.Controllers
             return PartialView("_AssessmentList", model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> PotentialApplications()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            var model = await _context.potentialJobs.Where(l => l.UserId == userId).ToListAsync();
+
+            return PartialView("_ToApplyList", model);
+        }
+
+
         public async Task<IActionResult> Interviews()
         {
             var userId = _userManager.GetUserId(User);
@@ -182,7 +196,6 @@ namespace ApplicationTrackerOnline.Controllers
         [HttpGet]
         public async Task <IActionResult> GetVaryingStages()
         {
-            _logger.LogInformation("GetVaryingStages action called.");
             var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
             {

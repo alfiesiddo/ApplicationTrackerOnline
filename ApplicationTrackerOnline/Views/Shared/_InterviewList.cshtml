@@ -1,6 +1,6 @@
 ﻿@model List<ApplicationTrackerOnline.Models.ApplicationDateDTO>
 @{
-    var orderedList = Model.OrderBy(async => async.Date);
+    var orderedList = Model.OrderBy(x => x.Date);
 }
 @if (Model != null && Model.Any())
 {

@@ -1,0 +1,15 @@
+﻿@model List<ApplicationTrackerOnline.Models.PotentialJob>
+@{
+    var orderedList = Model.OrderBy(x => x.EmployerName).ToList();
+}
+@if (Model != null && Model.Any())
+{
+    foreach (var item in orderedList)
+    {
+        <partial name="_ToApplyCard" model="item" />
+    }
+}
+else
+{
+    <p>There are no jobs that you currently have your eye on..</p>
+}

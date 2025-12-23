@@ -108,6 +108,19 @@ namespace ApplicationTrackerOnline.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> DeleteToApply(int id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+            var item = await _context.potentialJobs.Where( e => e.Id == id).FirstOrDefaultAsync();
+            _context.potentialJobs.Remove(item);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Home");
+        }
+        [HttpPost]
         public async Task<IActionResult> AddPotential(string EmployerName, string JobsiteURL)
         {
             var userId = _userManager.GetUserId(User);

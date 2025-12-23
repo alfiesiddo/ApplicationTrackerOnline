@@ -36,16 +36,66 @@
         </div>
         <div class="card p-4 mb-4">
             <div class="flex-fill status-scouted p-3 rounded border shadow">
-                <h3>Jobs To Apply For</h3>
+                <h3>
+                    List of Jobs To Apply For <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#addJobModal">
+                        Add
+                    </button>
+                </h3>
                 <div id="potentialJobsContainer"></div>
+            </div>
+        </div>
+    </div>
 
-                <button>Add New Job</button>
+    <div class="modal fade" id="addJobModal" tabindex="-1" aria-labelledby="addJobModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" asp-action="AddPotential" asp-controller="Home" class="needs-validation" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addJobModalLabel">Add Job</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label for="EmployerName" class="form-label">Employer name</label>
+                            <input name="EmployerName" type="text" class="form-control" id="EmployerName" required />
+                            <div class="invalid-feedback">Please enter an employer name.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="JobsiteURL" class="form-label">Job site URL</label>
+                            <input name="JobsiteURL" type="url" class="form-control" id="JobsiteURL" placeholder="https://example.com" />
+                            <div class="invalid-feedback">Please enter a valid URL or leave blank.</div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <script>
+        (function () {
+          'use strict'
+          var forms = document.querySelectorAll('.needs-validation')
+          Array.prototype.slice.call(forms).forEach(function(form) {
+            form.addEventListener('submit', function (event) {
+              if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+              }
+              form.classList.add('was-validated')
+            }, false)
+          })
+        })();
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             async function loadApplicationStagesPartial() {

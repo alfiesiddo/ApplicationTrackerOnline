@@ -3,7 +3,105 @@
 <div class="job-card status-scouted">
     <p>@Model.ToString()</p>
 
-    <button>Visit Listing</button>
+    <a class="btn" href="@Model.JobListing" target="_blank" rel="noopener">
+        Visit Listing
+    </a>
 
-    <button>Add To Applications</button>
+    <button type="button"
+            class="btn btn-dark"
+            data-bs-toggle="modal"
+            data-bs-target="#addApplicationModal-@Model.Id">
+        Add To Applications
+    </button>
 </div>
+
+<!-- Modal -->
+<div class="modal fade"
+     id="addApplicationModal-@Model.Id"
+     tabindex="-1"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form method="post"
+                  asp-controller="Home"
+                  asp-action="AddNewApplicationFromPot">
+
+                @Html.AntiForgeryToken()
+
+                <div class="modal-header modalText">
+                    <h5 class="modal-title">Add Application</h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body modalText">
+
+                    <div class="mb-3">
+                        <label class="form-label card-title">Company</label>
+                        <input name="Company"
+                               class="form-control"
+                               value="@Model.EmployerName"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <input name="Role"
+                               class="form-control"
+                               value=""
+                               placeholder="e.g. Software Developer"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input name="Location"
+                               class="form-control"
+                               placeholder="e.g. Manchester"
+                               value="" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Salary</label>
+                        <input name="Salary"
+                               type="number"
+                               class="form-control"
+                               value="0" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Application Portal</label>
+                        <input name="Portal"
+                               placeholder="e.g. https://tesco.com/careers"
+                               class="form-control"
+                               value="" />
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-danger"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-dark">
+                        Add Application
+                    </button>
+                </div>
+                <input type="hidden" name="PotentialJobId" value="@Model.Id" />
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.modalText{
+    color: black;
+}
+</style>

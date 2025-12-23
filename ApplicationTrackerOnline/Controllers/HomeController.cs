@@ -142,6 +142,31 @@ namespace ApplicationTrackerOnline.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> AddNewApplicationFromPot(string Company, string Role, string Location, int Salary, string Portal, int potentialJobId)
+        {
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var job = await _context.potentialJobs.FirstOrDefaultAsync(p => p.Id == potentialJobId && p.UserId == userId);
+
+            if (job == null)
+            {
+                return NotFound();
+            }
+
+            JobApplication application = new JobApplication(Role, Company, Location, Portal, Salary, userId);
+
+            _context.potentialJobs.Remove(job);
+            _context.jobApplications.Add(application);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
         public async Task<IActionResult> DeleteApplication(JobApplication application)
         {
             if (application != null)

@@ -13,6 +13,8 @@ namespace ApplicationTrackerOnline.Data
         public DbSet<JobApplication> jobApplications { get; set; }
         public DbSet<ApplicationsSpreadsheet> applicationsSpreadsheets { get; set; }
 
+        public DbSet<PotentialJob> potentialJobs { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
         }

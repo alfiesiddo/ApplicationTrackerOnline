@@ -73,7 +73,6 @@ namespace ApplicationTrackerOnline.Controllers
             return PartialView("_ToApplyList", model);
         }
 
-
         public async Task<IActionResult> Interviews()
         {
             var userId = _userManager.GetUserId(User);
@@ -106,6 +105,23 @@ namespace ApplicationTrackerOnline.Controllers
         public IActionResult AddApplication()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddPotential(string EmployerName, string JobsiteURL)
+        {
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            PotentialJob job = new PotentialJob(EmployerName, JobsiteURL, userId);
+
+            _context.potentialJobs.Add(job);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]

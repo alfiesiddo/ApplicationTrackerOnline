@@ -4,6 +4,7 @@ namespace ApplicationTrackerOnline.Models
 {
     public class PotentialJob
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]
@@ -14,6 +15,15 @@ namespace ApplicationTrackerOnline.Models
         public override string ToString()
         {
             return $"Job Listing for {EmployerName}";
+        }
+
+        public PotentialJob() { }
+
+        public PotentialJob(string employername, string url, string userId)
+        {
+            EmployerName = employername;
+            JobListing = url;
+            UserId = userId;
         }
     }
 }

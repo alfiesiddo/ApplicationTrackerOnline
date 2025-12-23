@@ -78,7 +78,17 @@ namespace ApplicationTrackerOnline.Controllers
             return PartialView("_InterviewList", model);
         }
 
+        public async Task<IActionResult> DeleteAllApplications()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            await _context.jobApplications.Where(e => e.UserId == userId).ExecuteDeleteAsync();
 
+            return Redirect("/Identity/Account/Manage");
+        }
         public IActionResult AddApplication()
         {
             return View();

@@ -288,3 +288,33 @@ dot {
 .job-card .initial {
     display: inline-block;
 }
+
+
+.btn-equal {
+    white-space: nowrap;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .d-md-flex > form {
+        flex: 0 0 140px;
+        width: auto;
+    }
+
+    .d-md-flex > .btn-equal {
+        flex: 0 0 140px; 
+        width: auto;
+    }
+
+    .buttons-container .d-md-flex {
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 420px) {
+    .btn-equal {
+        font-size: 0.95rem;
+        padding-inline: 0.6rem;
+    }
+}

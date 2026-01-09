@@ -1,30 +1,45 @@
 ﻿@model ApplicationTrackerOnline.Models.PotentialJob;
 
+<!-- HTML -->
 <div>
-<div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2 py-2">
 
-    <h58 class="mb-0">@Model.ToString()</h58>
+        <h5 class="mb-0">@Model.ToString()</h5>
 
-    <div class="d-flex gap-2">
-        <a class="btn btn-outline-dark" href="@Model.JobListing" target="_blank" rel="noopener">
-            View Job Listing
-        </a>
+        <div class="ms-md-auto w-100 w-md-auto buttons-container">
+            <div class="d-grid gap-2 d-md-flex align-items-center justify-content-md-end">
 
-        <button type="button"
-                class="btn btn-outline-dark"
-                data-bs-toggle="modal"
-                data-bs-target="#addApplicationModal-@Model.Id">
-            Add To 'Applications'
-        
-        </button>
-        <form method="post" asp-controller="Home" asp-action="DeleteToApply">
-            <input type="hidden" name="id" value="@Model.Id" />
-            <button type="submit" class="btn btn-outline-danger">Delete</button>
-        </form>
+                <a class="btn btn-outline-dark btn-equal"
+                   href="@Model.JobListing"
+                   target="_blank"
+                   rel="noopener"
+                   aria-label="View job listing">
+                    View Job Listing
+                </a>
+
+                <button type="button"
+                        class="btn btn-outline-dark btn-equal"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addApplicationModal-@Model.Id"
+                        aria-label="Add to Applications">
+                    Add To 'Applications'
+                </button>
+
+                <form method="post"
+                      asp-controller="Home"
+                      asp-action="DeleteToApply"
+                      class="m-0">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-outline-danger btn-equal" aria-label="Delete">
+                        Delete
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
     </div>
 </div>
-</div>
-
 <!-- Modal -->
 <div class="modal fade"
      id="addApplicationModal-@Model.Id"

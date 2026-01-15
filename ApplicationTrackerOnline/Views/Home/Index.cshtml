@@ -123,11 +123,12 @@
                 chartData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
                 const firstDate = new Date(chartData[0].date);
-                const lastDate = new Date(chartData[chartData.length - 1].date);
+                const today = new Date();
+                
+                today.setHours(0, 0, 0, 0);
 
-                // Build full date range from first application → last application
                 const allDates = [];
-                for (let d = new Date(firstDate); d <= lastDate; d.setDate(d.getDate() + 1)) {
+                for (let d = new Date(firstDate); d <= today; d.setDate(d.getDate() + 1)) {
                     allDates.push(new Date(d));
                 }
 

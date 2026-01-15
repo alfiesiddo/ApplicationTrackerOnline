@@ -20,9 +20,9 @@
             </div>
         </div>
         <div class="card p-4 mb-4">
-            <h3>Daily Applications (Last 3 Months)</h3>
+            <h3>Daily Applications (Since Start)</h3>
             <br />
-            <canvas id="applicationsChart" height="200"></canvas>
+            <canvas id="applicationsChart" height="300"></canvas>
         </div>
         <div class="card p-4 mb-4 d-flex flex-row gap-4">
             <div class="flex-fill status-assessments p-3 rounded border shadow">
@@ -110,23 +110,28 @@
             loadApplicationStagesPartial();
         });
     </script>
-    <script> 
+    <script>
         async function loadApplicationsChart() {
             try {
                 const response = await fetch('@Url.Action("GetDailyApplicationsChartData", "Home")');
                 if (!response.ok) throw new Error('Failed to fetch chart data');
 
                 const chartData = await response.json();
+                if (!chartData.length) return;
 
-                const today = new Date();
-                const startDate = new Date();
-                startDate.setMonth(startDate.getMonth() - 3);
+                // Sort data by date just in case
+                chartData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
+                const firstDate = new Date(chartData[0].date);
+                const lastDate = new Date(chartData[chartData.length - 1].date);
+
+                // Build full date range from first application → last application
                 const allDates = [];
-                for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+                for (let d = new Date(firstDate); d <= lastDate; d.setDate(d.getDate() + 1)) {
                     allDates.push(new Date(d));
                 }
 
+                // Map API data
                 const dataMap = chartData.reduce((acc, item) => {
                     acc[new Date(item.date).toDateString()] = item.count;
                     return acc;
@@ -139,10 +144,10 @@
                 new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: labels,
+                        labels,
                         datasets: [{
                             label: 'Applications',
-                            data: data,
+                            data,
                             backgroundColor: 'rgba(134, 0, 243, 0.18)',
                             borderColor: 'rgba(134, 0, 243, 0.8)',
                             borderWidth: 1.5,
@@ -157,13 +162,16 @@
                             legend: { display: true },
                             tooltip: {
                                 callbacks: {
-                                    label: function(ctx) { return ctx.raw + ' applications'; }
+                                    label: ctx => `${ctx.raw} applications`
                                 }
                             }
                         },
                         scales: {
                             x: { title: { display: true, text: 'Date' } },
-                            y: { title: { display: true, text: 'Applications' }, beginAtZero: true }
+                            y: {
+                                title: { display: true, text: 'Applications' },
+                                beginAtZero: true
+                            }
                         }
                     }
                 });

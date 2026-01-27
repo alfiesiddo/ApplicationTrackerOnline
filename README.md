@@ -1,5 +1,5 @@
 # Repo for HireHelper
-HireHelper is a web application that provides users with a simple, easy-to-use dashboard where they can track all of their applications and their respective stages. It is a web application I have made that also has a native Android/iOS MAUI client.
+HireHelper is a web application that provides users with a simple, easy-to-use dashboard where they can track all of their applications and their respective stages. It also has a native Android/iOS MAUI client that is a WIP.
 
 ## Features
 - Add applications.

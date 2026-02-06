@@ -53,7 +53,7 @@
                 <small class="applied-date">Applied: @Model.AppliedDate.ToString("dd MMM yyyy")</small><br />
                 @if(Model.Salary != 0)
                 {
-                    <small class="applied-date">Salary: £@Model.Salary.ToString()</small>
+                    <small class="applied-date">Salary: @Model.Salary.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("en-GB"))</small>
                 }
                 else
                 {

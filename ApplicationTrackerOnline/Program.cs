@@ -47,6 +47,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 builder.Services.AddScoped<ApplicationStatsService>();
+builder.Services.AddHostedService<AutomatedEmailService>();
 builder.Services.AddScoped<DataTransferringService>();
 
 builder.Services.AddAuthentication(options =>
